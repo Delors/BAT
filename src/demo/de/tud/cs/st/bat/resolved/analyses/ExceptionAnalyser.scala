@@ -4,14 +4,14 @@ import de.tud.cs.st.util.perf.Counting
 import de.tud.cs.st.bat.resolved.reader.Java6Framework
 import sun.security.mscapi.PRNG
 import de.tud.cs.st.bat.resolved.Method
-import de.tud.cs.st.bat.resolved.RETURN
 import de.tud.cs.st.bat.resolved.ObjectType
 import de.tud.cs.st.bat.resolved.ExceptionTable
 import de.tud.cs.st.bat.resolved.ExceptionTable
 import de.tud.cs.st.bat.resolved.ExceptionTable
 import de.tud.cs.st.bat.resolved.ExceptionHandler
-import de.tud.cs.st.bat.resolved.ASTORE_1
+import de.tud.cs.st.bat.resolved.RETURN
 import de.tud.cs.st.bat.resolved.ASTORE_2
+import de.tud.cs.st.bat.resolved.ASTORE_1
 
 class ExceptionAnalyser
 object ExceptionAnalyser extends ExceptionAnalyser {
@@ -30,7 +30,7 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 
 	def main(args : Array[String]) {
 
-		if (args.length == 0 || !args.forall(arg ⇒ arg.endsWith(".zip") || arg.endsWith(".jar"))) {
+		if (args.length == 0 || !args.forall(arg => arg.endsWith(".zip") || arg.endsWith(".jar"))) {
 			printUsage
 			sys.exit(1)
 		}
@@ -53,7 +53,7 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 		var classHierarchy = new ClassHierarchy
 
 		var classFilesCount = 0
-		val classFiles = time(t ⇒ println("Reading all class files took: " + nsToSecs(t))) {
+		val classFiles = time(t => println("Reading all class files took: " + nsToSecs(t))) {
 			for (zipFile ← zipFiles; classFile ← Java6Framework.ClassFiles(zipFile)) yield {
 				classFilesCount += 1
 				classHierarchy = classHierarchy + classFile
@@ -67,7 +67,7 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 		var toGenerallExceptionCatched : List[(String, String)] = Nil
 		val exceptionType = ObjectType("java/lang/Exception")
 
-		val exceptionInstructions = time(t ⇒ println("Exception Handling took: " + nsToSecs(t))) {
+		val exceptionInstructions = time(t => println("Exception Handling took: " + nsToSecs(t))) {
 			for (classFile ← classFiles) yield {
 
 				println("Class : " + classFile.thisClass.className)
@@ -80,7 +80,7 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 
 					var catchTypes : List[ObjectType] = Nil;
 
-					for (handler ← method.body.get.exceptionHandlers if !method.body.get.exceptionHandlers.isEmpty) {
+					for (handler ← method.body.get.exceptionHandlers if method.body.isDefined && !method.body.get.exceptionHandlers.isEmpty) {
 
 						println("ExceptionHandler: " + handler);
 
@@ -92,20 +92,20 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 						var end = false
 						var error = false;
 						while (!end && i < instructions.size) {
-//							println(end + " in while")
+							//							println(end + " in while")
 							instructions.apply(i) match {
-								case RETURN ⇒
+								case RETURN =>
 									println(instructions(i) + " " + i);
 									i += 1
 									end = true;
 									if (error) {
 										noErrorHandling = (classFile.thisClass.className, method.name, handler.handlerPC) :: noErrorHandling
 									}
-								case ASTORE_1 | ASTORE_2 ⇒
+								case ASTORE_1 | ASTORE_2 =>
 									println(instructions(i) + " " + i);
 									i += 1;
 									error = true;
-								case _ ⇒
+								case _ =>
 									println(instructions(i) + " " + i);
 									end = true;
 							}
@@ -114,8 +114,8 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 					// checking for throwing the broad exception "Exception"
 					for (attribute ← method.attributes) {
 						attribute match {
-							case et : ExceptionTable ⇒ if (et.exceptions.contains(exceptionType)) { toGenerallExceptionThrown = (classFile.thisClass.className, method.name) :: toGenerallExceptionThrown }
-							case _ ⇒
+							case et : ExceptionTable => if (et.exceptions.contains(exceptionType)) { toGenerallExceptionThrown = (classFile.thisClass.className, method.name) :: toGenerallExceptionThrown }
+							case _ =>
 						}
 					}
 
