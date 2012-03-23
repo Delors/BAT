@@ -5,6 +5,7 @@ import de.tud.cs.st.util.perf.PerformanceEvaluation
 import de.tud.cs.st.util.perf.Counting
 import de.tud.cs.st.bat.resolved.ObjectType
 import de.tud.cs.st.bat.resolved.ArrayType
+import de.tud.cs.st.bat.resolved.Field
 
 class AccessAnalyser
 object AccessAnalyser extends AccessAnalyser {
@@ -55,11 +56,20 @@ object AccessAnalyser extends AccessAnalyser {
 		}
 		println("Classfiles: " + classFilesCount)
 
-		var psButNotFinal : List[(String, String)] = Nil
-		var arrayAsPST : List[(String, String)] = Nil
 		val accessInstructions = time(t => println("Access Handling " + nsToSecs(t))) {
 
-			for (classFile ← classFiles) yield {
+				var psNotFinal = for (classFile ← classFiles;
+					field <- classFile.fields if field.isPublic && field.isStatic && !field.isFinal) yield (classFile,field);
+
+				var r = for(classFile <- classFiles;
+				field <- classFile.fields if field.fieldType.isArrayType && 
+					field.isPublic && field.isStatic && field.isFinal) yield (classFile,field);
+
+				
+
+		
+			
+/*			for (classFile ← classFiles) yield {
 
 				for (field <- classFile.fields) {
 					if (field.isPublic && field.isStatic && !field.isFinal) {
@@ -74,13 +84,13 @@ object AccessAnalyser extends AccessAnalyser {
 					}
 				}
 
-			}
+			}*/
 			println
-			println(psButNotFinal)
-			println("Found public static fields without final modifier: " + psButNotFinal.size)
+		
+			println("Found public static fields without final modifier: " + psNotFinal.size)
 			println("--------------------");
-			println(arrayAsPST)
-			println("Found public static final arrays " + arrayAsPST.size)
+			
+			println("Found public static final arrays " + r.size)
 			println("--------------------");
 		}
 

@@ -91,25 +91,25 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 						var i = handler.handlerPC
 						var end = false
 						var error = false;
-						while (!end && i < instructions.size) {
-							//							println(end + " in while")
-							instructions.apply(i) match {
-								case RETURN =>
-									println(instructions(i) + " " + i);
-									i += 1
-									end = true;
-									if (error) {
-										noErrorHandling = (classFile.thisClass.className, method.name, handler.handlerPC) :: noErrorHandling
-									}
-								case ASTORE_1 | ASTORE_2 =>
-									println(instructions(i) + " " + i);
-									i += 1;
-									error = true;
-								case _ =>
-									println(instructions(i) + " " + i);
-									end = true;
-							}
-						}
+//						while (!end && i < instructions.size) {
+//							//							println(end + " in while")
+//							instructions.apply(i) match {
+//								case RETURN =>
+////									println(instructions(i) + " " + i);
+//									i += 1
+//									end = true;
+//									if (error) {
+//										noErrorHandling = (classFile.thisClass.className, method.name, handler.handlerPC) :: noErrorHandling
+//									}
+//								case ASTORE_1 | ASTORE_2 =>
+////									println(instructions(i) + " " + i);
+//									i += 1;
+//									error = true;
+//								case _ =>
+////									println(instructions(i) + " " + i);
+//									end = true;
+//							}
+//						}
 					}
 					// checking for throwing the broad exception "Exception"
 					for (attribute ← method.attributes) {
@@ -125,11 +125,11 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 					}
 
 					// DEBUG, see ByteCode Commands
-					//					var line = 0
-					//					for (instruction ← method.body.get.instructions if !method.body.get.instructions.isEmpty && !method.body.get.exceptionHandlers.isEmpty && debug) {
-					//						println("\t" + line + " " + instruction)
-					//						line += 1
-					//					}
+					var line = 0
+					for (instruction ← method.body.get.instructions if !method.body.get.instructions.isEmpty && !method.body.get.exceptionHandlers.isEmpty && debug) {
+						println("\t" + line + " " + instruction)
+						line += 1
+					}
 
 				}
 				println;
