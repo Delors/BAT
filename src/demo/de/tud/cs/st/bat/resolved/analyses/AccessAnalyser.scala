@@ -46,6 +46,13 @@ import de.tud.cs.st.bat.resolved.ISTORE_3
 import de.tud.cs.st.bat.resolved.ISTORE
 import de.tud.cs.st.bat.resolved.IFEQ
 import de.tud.cs.st.bat.resolved.Method
+import de.tud.cs.st.bat.resolved.INVOKESPECIAL
+import de.tud.cs.st.bat.resolved.ObjectType
+import de.tud.cs.st.bat.resolved.LDC2_W
+import de.tud.cs.st.bat.resolved.ConstantLong
+import de.tud.cs.st.bat.resolved.ConstantInteger
+import de.tud.cs.st.bat.resolved.LDC2_W
+
 
 /**
  *
@@ -141,6 +148,7 @@ object AccessAnalyser extends AccessAnalyser {
 			var assigning = false;
 			var i = 0
 			while (!end && i < instructions.size) {
+
 				instructions.apply(i) match {
 					case ISTORE_0 | ISTORE_1 | ISTORE_2 | ISTORE_3 | ISTORE(_) ⇒
 						assigning = true;
@@ -160,7 +168,41 @@ object AccessAnalyser extends AccessAnalyser {
 		}
 		wrongIfStatement
 	}
-	
+
+	/**
+	 * checks if a if or while statement contains a fixed boolean expression and therefore is always true or false
+	 * NOT IMPLEMENTED YET
+	 */
+	def RandomSeedAnalyser(classFile : ClassFile) = {
+		var predictableSeed : List[(ClassFile, Method)] = Nil
+		val randomType = ObjectType("java/util/Random")
+		for (method ← classFile.methods if !method.body.get.instructions.isEmpty) {
+			var instructions = method.body.get.instructions
+			var end = false
+			var assigning = false;
+			var i = 0
+			var lastInstruction = instructions.apply(i)
+			while (!end && i < instructions.size) {
+				instructions.apply(i) match {
+					case INVOKESPECIAL(randomType, _, _) ⇒
+						lastInstruction match {
+							case LDC2_W(ConstantLong(_)) | LDC2_W(ConstantInteger(_)) ⇒
+							predictableSeed = (classFile,method) :: predictableSeed
+							case _ ⇒
+
+						}
+						i += 1
+					case _ ⇒
+						if (instructions.apply(i) != null) {
+							lastInstruction = instructions.apply(i)
+						}
+						i += 1
+				}
+			}
+		}
+		predictableSeed
+	}
+
 	/**
 	 * checks if a if or while statement contains a fixed boolean expression and therefore is always true or false
 	 * NOT IMPLEMENTED YET
@@ -208,7 +250,7 @@ object AccessAnalyser extends AccessAnalyser {
 			println(method.name)
 		}
 		for (method ← classFile.methods; instruction ← method.body.get.instructions if !method.body.get.instructions.isEmpty) {
-			if(instruction != null)println("\t" + line + " " + instruction)
+			if (instruction != null) println("\t" + line + " " + instruction)
 			line += 1
 		}
 		println

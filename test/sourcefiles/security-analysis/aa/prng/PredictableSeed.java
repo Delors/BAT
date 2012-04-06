@@ -30,22 +30,21 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat
+package aa.prng;
 
-import org.scalatest.Suites
+import java.util.Random;
 
 /**
- * Suite for security analysis tests
- *
+ * A random number can be guessed from a seed like using ID or system time.
  * @author Dennis Siebert
+ *
  */
-@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class SecurityAnalysisSuite extends Suites(
+public class PredictableSeed {
 
-	new resolved.analyses.aa.ArrayTest,
-	new resolved.analyses.aa.AssignTest,
-	new resolved.analyses.aa.FieldTest,
-	new resolved.analyses.aa.RandomSeedTest 
-	//	new resolved.analyses.aa.FixedExpressionTest
-	//	new resolved.analyses.aa.ObjectRefTest
-	)
+	public void createRandom() {
+		long currentTimeMillis = System.currentTimeMillis();
+		System.out.println("blabla");
+		Random random = new Random(currentTimeMillis);
+		int accountID = random.nextInt();
+	}
+}

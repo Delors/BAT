@@ -30,22 +30,23 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat
+package aa.prng;
 
-import org.scalatest.Suites
+import java.util.Random;
 
 /**
- * Suite for security analysis tests
- *
+ * A software uses the same see each time in is initialized. If an attacker
+ * knows or guess the seeds he might determine the random number.
+ * 
  * @author Dennis Siebert
+ * 
  */
-@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class SecurityAnalysisSuite extends Suites(
+public class SameSeedInt {
 
-	new resolved.analyses.aa.ArrayTest,
-	new resolved.analyses.aa.AssignTest,
-	new resolved.analyses.aa.FieldTest,
-	new resolved.analyses.aa.RandomSeedTest 
-	//	new resolved.analyses.aa.FixedExpressionTest
-	//	new resolved.analyses.aa.ObjectRefTest
-	)
+	private static final int SEED = 1234567890;
+
+	public int generateAccountID() {
+		Random random = new Random(SEED);
+		return random.nextInt();
+	}
+}
