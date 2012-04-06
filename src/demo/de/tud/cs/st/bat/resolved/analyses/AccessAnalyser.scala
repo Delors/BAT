@@ -107,7 +107,8 @@ object AccessAnalyser extends AccessAnalyser {
 	private def analyse(classFile : de.tud.cs.st.bat.resolved.reader.Java6Framework.ClassFile) : Unit = {
 		var psNotFinal = FieldNotFinal(classFile)
 		var Arrays = ArrayPSF(classFile);
-		printResults(psNotFinal.size, Arrays.size)
+		var assignings = AssigningInsteadCompare(classFile)
+		printResults(psNotFinal.size, Arrays.size, assignings.size)
 	}
 
 	/**
@@ -131,7 +132,6 @@ object AccessAnalyser extends AccessAnalyser {
 
 	/**
 	 * checks for assigning inside if statement instead of checking boolean value or compare for a boolean value
-	 * NOT IMPLEMENTED YET
 	 */
 	def AssigningInsteadCompare(classFile : ClassFile) = {
 		var wrongIfStatement : List[(ClassFile, Method)] = Nil
@@ -158,8 +158,15 @@ object AccessAnalyser extends AccessAnalyser {
 				}
 			}
 		}
-		debug(classFile)
 		wrongIfStatement
+	}
+	
+	/**
+	 * checks if a if or while statement contains a fixed boolean expression and therefore is always true or false
+	 * NOT IMPLEMENTED YET
+	 */
+	def FixedExpresson(classFile : ClassFile) = {
+		debug(classFile)
 	}
 
 	/**
@@ -173,7 +180,7 @@ object AccessAnalyser extends AccessAnalyser {
 	/**
 	 * prints the current results of both analysis
 	 */
-	private def printResults(psNotFinalSize : Integer, ArraysSize : Integer) : Unit = {
+	private def printResults(psNotFinalSize : Integer, ArraysSize : Integer, AssignSize : Integer) : Unit = {
 
 		println
 
@@ -181,6 +188,9 @@ object AccessAnalyser extends AccessAnalyser {
 		println("--------------------");
 
 		println("Found public static final arrays " + ArraysSize)
+		println("--------------------");
+
+		println("Found wrong if assignings " + AssignSize)
 		println("--------------------");
 	}
 
@@ -198,7 +208,7 @@ object AccessAnalyser extends AccessAnalyser {
 			println(method.name)
 		}
 		for (method ← classFile.methods; instruction ← method.body.get.instructions if !method.body.get.instructions.isEmpty) {
-			println("\t" + line + " " + instruction)
+			if(instruction != null)println("\t" + line + " " + instruction)
 			line += 1
 		}
 		println

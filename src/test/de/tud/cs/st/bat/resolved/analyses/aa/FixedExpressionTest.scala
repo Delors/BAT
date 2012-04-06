@@ -30,21 +30,60 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat
-
-import org.scalatest.Suites
+package de.tud.cs.st.bat.resolved.analyses.aa
+import org.scalatest.FunSuite
+import de.tud.cs.st.bat.resolved.reader.Java6Framework
+import de.tud.cs.st.bat.resolved.analyses.AccessAnalyser
 
 /**
- * Suite for security analysis tests
- *
  * @author Dennis Siebert
  */
-@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class SecurityAnalysisSuite extends Suites(
+//@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
+class FixedExpressionTest extends FunSuite {
 
-	new resolved.analyses.aa.ArrayTest,
-	new resolved.analyses.aa.AssignTest,
-	new resolved.analyses.aa.FieldTest,
-	new resolved.analyses.aa.FixedExpressionTest
-//	new resolved.analyses.aa.ObjectRefTest
-)
+	private val classA = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/fixed_expression/AlwaysIfTrue.class")
+	assert(classA ne null)
+	
+	private val classB = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/fixed_expression/AlwaysIfFalse.class")
+	assert(classB ne null)
+
+	private val classC = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/fixed_expression/AlwaysWhileTrue.class")
+	assert(classC ne null)
+	
+	private val classD = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/fixed_expression/AlwaysIfVariable.class")
+	assert(classD ne null)
+	
+	private val classE = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/fixed_expression/AlwaysWhileVariableTrue.class")
+	assert(classE ne null)
+	private val accessAnalyser = AccessAnalyser
+
+//	test("URL array") {
+//
+//		val result = accessAnalyser.FixedExpresson(classA)
+//	
+//	}
+//	
+//	test("URL array2") {
+//
+//		val result = accessAnalyser.FixedExpresson(classB)
+//	
+//	}
+	
+	test("URL array3") {
+
+		val result = accessAnalyser.FixedExpresson(classC)
+	
+	}
+	
+//	test("URL array4") {
+//
+//		val result = accessAnalyser.FixedExpresson(classD)
+//	
+//	}
+	
+	test("URL array5") {
+
+		val result = accessAnalyser.FixedExpresson(classE)
+	
+	}
+}
