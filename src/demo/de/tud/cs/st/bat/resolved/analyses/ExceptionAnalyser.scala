@@ -1,6 +1,8 @@
 package de.tud.cs.st.bat.resolved.analyses
 import de.tud.cs.st.util.perf.PerformanceEvaluation
 import de.tud.cs.st.util.perf.Counting
+import de.tud.cs.st.bat.resolved.analyses.ClassHierarchy;
+import de.tud.cs.st.bat.resolved.analyses.ExceptionAnalyser;
 import de.tud.cs.st.bat.resolved.reader.Java6Framework
 import sun.security.mscapi.PRNG
 import de.tud.cs.st.bat.resolved.Method
@@ -21,7 +23,7 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 	private val CountingPerformanceEvaluator = new PerformanceEvaluation with Counting
 	import CountingPerformanceEvaluator._
 
-	import de.tud.cs.st.util.perf._
+import de.tud.cs.st.util.perf._
 
 	private def printUsage : Unit = {
 		println("Usage: java …Main <ZIP or JAR file containing class files>+")
