@@ -30,20 +30,24 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat
-
-import org.scalatest.Suites
+package aa.assigning;
 
 /**
- * Suite for security analysis tests
- *
  * @author Dennis Siebert
  */
-@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class SecurityAnalysisSuite extends Suites(
+public class AssigningNotInlined {
 
-	new resolved.analyses.aa.ArrayTest,
-	new resolved.analyses.aa.AssignTest,
-	new resolved.analyses.aa.FieldTest
-//	new resolved.analyses.aa.ObjectRefTest
-)
+	public void checkValid(boolean isValid) {
+		/*
+		 * The if clause is not validating against true, it is assigning true
+		 * and the always evaluating to true
+		 */
+		isValid = true;
+		if (isValid) {
+			System.out.println("Performing  processing");
+		} else {
+			System.out.println("Not  Valid,  do  not  perform  processing");
+		}
+	}
+
+}

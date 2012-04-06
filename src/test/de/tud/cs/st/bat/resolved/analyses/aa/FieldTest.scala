@@ -30,20 +30,43 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat
-
-import org.scalatest.Suites
+package de.tud.cs.st.bat.resolved.analyses.aa
+import org.scalatest.FunSuite
+import de.tud.cs.st.bat.resolved.reader.Java6Framework
+import de.tud.cs.st.bat.resolved.analyses.AccessAnalyser
 
 /**
- * Suite for security analysis tests
- *
  * @author Dennis Siebert
  */
-@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class SecurityAnalysisSuite extends Suites(
+//@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
+class FieldTest extends FunSuite {
 
-	new resolved.analyses.aa.ArrayTest,
-	new resolved.analyses.aa.AssignTest,
-	new resolved.analyses.aa.FieldTest
-//	new resolved.analyses.aa.ObjectRefTest
-)
+	private val classA = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/fields/Fields.class")
+	assert(classA ne null)
+
+	private val classB = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/fields/FieldsIsFinal.class")
+	assert(classB ne null)
+
+	private val classC = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/fields/FieldsPrivate.class")
+	assert(classC ne null)
+
+	private val accessAnalyser = AccessAnalyser
+
+	test("Field is not final") {
+
+		val result = accessAnalyser.FieldNotFinal(classA)
+		assert(result.size == 1)
+	}
+	
+	test("Field is already final") {
+
+		val result = accessAnalyser.FieldNotFinal(classB)
+		assert(result.size == 0)
+	}
+	
+	test("Field is private") {
+
+		val result = accessAnalyser.FieldNotFinal(classC)
+		assert(result.size == 0)
+	}
+}

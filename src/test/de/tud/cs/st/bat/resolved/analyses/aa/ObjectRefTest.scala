@@ -30,20 +30,35 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat
-
-import org.scalatest.Suites
+package de.tud.cs.st.bat.resolved.analyses.aa
+import org.scalatest.FunSuite
+import de.tud.cs.st.bat.resolved.reader.Java6Framework
+import de.tud.cs.st.bat.resolved.analyses.AccessAnalyser
 
 /**
- * Suite for security analysis tests
- *
  * @author Dennis Siebert
  */
-@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class SecurityAnalysisSuite extends Suites(
+//@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
+class ObjectRefTest extends FunSuite {
 
-	new resolved.analyses.aa.ArrayTest,
-	new resolved.analyses.aa.AssignTest,
-	new resolved.analyses.aa.FieldTest
-//	new resolved.analyses.aa.ObjectRefTest
-)
+	private val classA = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/compare/ObjectReference.class")
+	assert(classA ne null)
+
+	private val classB= Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/compare/ObjectReferenceRight.class")
+	assert(classB ne null)
+	
+	
+	private val accessAnalyser = AccessAnalyser
+
+	test("compare object wrong") {
+
+		val result = accessAnalyser.AssigningInsteadCompare(classA)
+
+	}
+	
+	test("compare object right") {
+
+		val result = accessAnalyser.AssigningInsteadCompare(classB)
+
+	}
+}

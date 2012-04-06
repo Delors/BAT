@@ -30,57 +30,23 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat.resolved.analysesTest
-import org.scalatest.FunSuite
-import de.tud.cs.st.bat.resolved.reader.Java6Framework
-import de.tud.cs.st.bat.resolved.analyses.AccessAnalyser
+package aa.assigning;
 
 /**
  * @author Dennis Siebert
  */
-//@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class AccessAnalyserArrayTest extends FunSuite {
+public class AssigningRight {
 
-	private val classA = Java6Framework.ClassFile("test/classfiles/Fields.zip", "aa/array/ArrayPSF1.class")
-	assert(classA ne null)
-
-	private val classB = Java6Framework.ClassFile("test/classfiles/Fields.zip", "aa/array/ArrayPSF2.class")
-	assert(classB ne null)
-
-	private val classC = Java6Framework.ClassFile("test/classfiles/Fields.zip", "aa/array/ArrayPS.class")
-	assert(classC ne null)
-
-	private val classD = Java6Framework.ClassFile("test/classfiles/Fields.zip", "aa/array/ArrayPF.class")
-	assert(classD ne null)
-
-	private val classE = Java6Framework.ClassFile("test/classfiles/Fields.zip", "aa/array/ArraySF.class")
-	assert(classE ne null)
-
-	private val accessAnalyser = AccessAnalyser
-
-	test("URL array") {
-
-		val result = accessAnalyser.ArrayPSF(classA)
-		assert(result.size == 1)
+	public void checkValid(boolean isValid) {
+		/*
+		 * The if clause is not validating against true, it is assigning true
+		 * and the always evaluating to true
+		 */
+		if (isValid) {
+			System.out.println("Performing  processing");
+		} else {
+			System.out.println("Not  Valid,  do  not  perform  processing");
+		}
 	}
 
-	test("String array") {
-		val result = accessAnalyser.ArrayPSF(classB)
-		assert(result.size == 1)
-	}
-
-	test("Array is not final") {
-		val result = accessAnalyser.ArrayPSF(classC)
-		assert(result.size == 0)
-	}
-
-	test("Array is not static") {
-		val result = accessAnalyser.ArrayPSF(classC)
-		assert(result.size == 0)
-	}
-
-	test("Array is not public") {
-		val result = accessAnalyser.ArrayPSF(classC)
-		assert(result.size == 0)
-	}
 }

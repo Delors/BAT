@@ -33,13 +33,24 @@
 package de.tud.cs.st.bat.resolved.analyses
 
 import scala.Array.canBuildFrom
-
 import de.tud.cs.st.bat.resolved.reader.Java6Framework.ClassFile
 import de.tud.cs.st.bat.resolved.reader.Java6Framework
 import de.tud.cs.st.util.perf.nsToSecs
 import de.tud.cs.st.util.perf.Counting
 import de.tud.cs.st.util.perf.PerformanceEvaluation
+import de.tud.cs.st.bat.resolved.ISTORE_1
+import de.tud.cs.st.bat.resolved.ISTORE_1
+import de.tud.cs.st.bat.resolved.ISTORE_0
+import de.tud.cs.st.bat.resolved.ISTORE_2
+import de.tud.cs.st.bat.resolved.ISTORE_3
+import de.tud.cs.st.bat.resolved.ISTORE
+import de.tud.cs.st.bat.resolved.IFEQ
+import de.tud.cs.st.bat.resolved.Method
 
+/**
+ *
+ * @author Dennis Siebert
+ */
 class AccessAnalyser
 object AccessAnalyser extends AccessAnalyser {
 	def main(args : Array[String]) {
@@ -58,7 +69,7 @@ object AccessAnalyser extends AccessAnalyser {
 			}
 		}
 
-		analyze(args)
+		init(args)
 
 		sys.exit(0)
 	}
@@ -73,7 +84,7 @@ object AccessAnalyser extends AccessAnalyser {
 		println("(c) 2011 Michael Eichberg (eichberg@informatik.tu-darmstadt.de)")
 	}
 
-	def analyze(zipFiles : Array[String]) {
+	def init(zipFiles : Array[String]) {
 		var classHierarchy = new ClassHierarchy
 
 		var classFilesCount = 0
@@ -88,13 +99,15 @@ object AccessAnalyser extends AccessAnalyser {
 
 		val accessInstructions = time(t ⇒ println("Access Handling " + nsToSecs(t))) {
 			for (classFile ← classFiles) {
-
-				var psNotFinal = FieldNotFinal(classFile)
-				var r = ArrayPSF(classFile);
-				printResults(psNotFinal, r)
+				analyse(classFile)
 			}
 		}
+	}
 
+	private def analyse(classFile : de.tud.cs.st.bat.resolved.reader.Java6Framework.ClassFile) : Unit = {
+		var psNotFinal = FieldNotFinal(classFile)
+		var Arrays = ArrayPSF(classFile);
+		printResults(psNotFinal.size, Arrays.size)
 	}
 
 	/**
@@ -107,7 +120,7 @@ object AccessAnalyser extends AccessAnalyser {
 	}
 
 	/**
-	 * checks for array fields, which public static final. The array may be immutable but not its content.
+	 * checks for array fields, which are public static final. The array may be immutable but not its content.
 	 */
 	def ArrayPSF(classFile : ClassFile) = {
 		for (
@@ -117,17 +130,78 @@ object AccessAnalyser extends AccessAnalyser {
 	}
 
 	/**
+	 * checks for assigning inside if statement instead of checking boolean value or compare for a boolean value
+	 * NOT IMPLEMENTED YET
+	 */
+	def AssigningInsteadCompare(classFile : ClassFile) = {
+		var wrongIfStatement : List[(ClassFile, Method)] = Nil
+		for (method ← classFile.methods) {
+			var instructions = method.body.get.instructions
+			var end = false
+			var assigning = false;
+			var i = 0
+			while (!end && i < instructions.size) {
+				instructions.apply(i) match {
+					case ISTORE_0 | ISTORE_1 | ISTORE_2 | ISTORE_3 | ISTORE(_) ⇒
+						assigning = true;
+						i += 1
+					case IFEQ(_) ⇒
+						if (assigning) {
+							end = true;
+							wrongIfStatement = (classFile, method) :: wrongIfStatement
+						}
+						assigning = false
+						i += 1
+					case _ ⇒
+						assigning = false
+						i += 1
+				}
+			}
+		}
+		debug(classFile)
+		wrongIfStatement
+	}
+
+	/**
+	 * checks for just comparing the object reference then the actual object content instead
+	 * NOT IMPLEMENTED YET
+	 */
+	def ComparbjectReference(classFile : ClassFile) = {
+		debug(classFile)
+	}
+
+	/**
 	 * prints the current results of both analysis
 	 */
-	private def printResults(psNotFinal : IndexedSeq[(ClassFile, de.tud.cs.st.bat.resolved.Field)], r : IndexedSeq[(ClassFile, de.tud.cs.st.bat.resolved.Field)]) : Unit = {
+	private def printResults(psNotFinalSize : Integer, ArraysSize : Integer) : Unit = {
 
 		println
 
-		println("Found public static fields without final modifier: " + psNotFinal.size)
+		println("Found public static fields without final modifier: " + psNotFinalSize)
 		println("--------------------");
 
-		println("Found public static final arrays " + r.size)
+		println("Found public static final arrays " + ArraysSize)
 		println("--------------------");
+	}
+
+	/**
+	 * printing class and methodname + bytecode instructions + corresponding line number
+	 */
+	private def debug(classFile : de.tud.cs.st.bat.resolved.reader.Java6Framework.ClassFile) : Unit = {
+		/*
+	   * For Source code purposes
+	   */
+		var line = 0
+		println(classFile.thisClass.className)
+
+		for (method ← classFile.methods) {
+			println(method.name)
+		}
+		for (method ← classFile.methods; instruction ← method.body.get.instructions if !method.body.get.instructions.isEmpty) {
+			println("\t" + line + " " + instruction)
+			line += 1
+		}
+		println
 	}
 
 }

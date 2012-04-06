@@ -1,19 +1,15 @@
 package de.tud.cs.st.bat.resolved.analyses
-import de.tud.cs.st.util.perf.PerformanceEvaluation
-import de.tud.cs.st.util.perf.Counting
-import de.tud.cs.st.bat.resolved.analyses.ClassHierarchy;
-import de.tud.cs.st.bat.resolved.analyses.ExceptionAnalyser;
+import de.tud.cs.st.bat.resolved.analyses.ClassHierarchy
+import de.tud.cs.st.bat.resolved.analyses.ExceptionAnalyser
 import de.tud.cs.st.bat.resolved.reader.Java6Framework
-import sun.security.mscapi.PRNG
+import de.tud.cs.st.bat.resolved.ExceptionHandler
+import de.tud.cs.st.bat.resolved.ExceptionTable
+import de.tud.cs.st.bat.resolved.ExceptionTable
+import de.tud.cs.st.bat.resolved.ExceptionTable
 import de.tud.cs.st.bat.resolved.Method
 import de.tud.cs.st.bat.resolved.ObjectType
-import de.tud.cs.st.bat.resolved.ExceptionTable
-import de.tud.cs.st.bat.resolved.ExceptionTable
-import de.tud.cs.st.bat.resolved.ExceptionTable
-import de.tud.cs.st.bat.resolved.ExceptionHandler
-import de.tud.cs.st.bat.resolved.RETURN
-import de.tud.cs.st.bat.resolved.ASTORE_2
-import de.tud.cs.st.bat.resolved.ASTORE_1
+import de.tud.cs.st.util.perf.Counting
+import de.tud.cs.st.util.perf.PerformanceEvaluation
 
 class ExceptionAnalyser
 object ExceptionAnalyser extends ExceptionAnalyser {

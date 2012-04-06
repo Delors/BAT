@@ -30,20 +30,52 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat
-
-import org.scalatest.Suites
+package de.tud.cs.st.bat.resolved.analyses.aa
+import org.scalatest.FunSuite
+import de.tud.cs.st.bat.resolved.reader.Java6Framework
+import de.tud.cs.st.bat.resolved.analyses.AccessAnalyser
 
 /**
- * Suite for security analysis tests
- *
  * @author Dennis Siebert
  */
-@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class SecurityAnalysisSuite extends Suites(
+//@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
+class AssignTest extends FunSuite {
 
-	new resolved.analyses.aa.ArrayTest,
-	new resolved.analyses.aa.AssignTest,
-	new resolved.analyses.aa.FieldTest
-//	new resolved.analyses.aa.ObjectRefTest
-)
+	private val classA = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/assigning/AssigningWrong.class")
+	assert(classA ne null)
+
+	private val classB = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/assigning/AssigningNotInlined.class")
+	assert(classB ne null)
+
+	private val classC = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/assigning/AssigningRight.class")
+	assert(classC ne null)
+
+	private val classD = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/assigning/AssigningRightEqual.class")
+	assert(classD ne null)
+
+	private val accessAnalyser = AccessAnalyser
+
+	test("Check / Assign wrong") {
+
+		val result = accessAnalyser.AssigningInsteadCompare(classA)
+		assert(result.size == 1)
+	}
+
+	test("Check / Assign not inlined") {
+
+		val result = accessAnalyser.AssigningInsteadCompare(classB)
+		assert(result.size == 0)
+	}
+
+	test("Check / Assign right") {
+
+		val result = accessAnalyser.AssigningInsteadCompare(classC)
+		assert(result.size == 0)
+	}
+
+	test("Check / Assign right with == ") {
+
+		val result = accessAnalyser.AssigningInsteadCompare(classD)
+		assert(result.size == 0)
+	}
+}

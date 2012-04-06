@@ -30,7 +30,7 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat.resolved.analysesTest
+package de.tud.cs.st.bat.resolved.analyses.aa
 import org.scalatest.FunSuite
 import de.tud.cs.st.bat.resolved.reader.Java6Framework
 import de.tud.cs.st.bat.resolved.analyses.AccessAnalyser
@@ -39,34 +39,48 @@ import de.tud.cs.st.bat.resolved.analyses.AccessAnalyser
  * @author Dennis Siebert
  */
 //@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class AccessAnalyserFieldTest extends FunSuite {
+class ArrayTest extends FunSuite {
 
-	private val classA = Java6Framework.ClassFile("test/classfiles/Fields.zip", "aa/fields/Fields.class")
+	private val classA = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/array/ArrayPSF1.class")
 	assert(classA ne null)
 
-	private val classB = Java6Framework.ClassFile("test/classfiles/Fields.zip", "aa/fields/FieldsIsFinal.class")
+	private val classB = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/array/ArrayPSF2.class")
 	assert(classB ne null)
 
-	private val classC = Java6Framework.ClassFile("test/classfiles/Fields.zip", "aa/fields/FieldsPrivate.class")
+	private val classC = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/array/ArrayPS.class")
 	assert(classC ne null)
+
+	private val classD = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/array/ArrayPF.class")
+	assert(classD ne null)
+
+	private val classE = Java6Framework.ClassFile("test/classfiles/AA.zip", "aa/array/ArraySF.class")
+	assert(classE ne null)
 
 	private val accessAnalyser = AccessAnalyser
 
-	test("Field is not final") {
+	test("URL array") {
 
-		val result = accessAnalyser.FieldNotFinal(classA)
+		val result = accessAnalyser.ArrayPSF(classA)
 		assert(result.size == 1)
 	}
-	
-	test("Field is already final") {
 
-		val result = accessAnalyser.FieldNotFinal(classB)
+	test("String array") {
+		val result = accessAnalyser.ArrayPSF(classB)
+		assert(result.size == 1)
+	}
+
+	test("Array is not final") {
+		val result = accessAnalyser.ArrayPSF(classC)
 		assert(result.size == 0)
 	}
-	
-	test("Field is private") {
 
-		val result = accessAnalyser.FieldNotFinal(classC)
+	test("Array is not static") {
+		val result = accessAnalyser.ArrayPSF(classC)
+		assert(result.size == 0)
+	}
+
+	test("Array is not public") {
+		val result = accessAnalyser.ArrayPSF(classC)
 		assert(result.size == 0)
 	}
 }
