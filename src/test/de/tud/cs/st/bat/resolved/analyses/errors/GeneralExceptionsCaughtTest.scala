@@ -1,9 +1,4 @@
-/* License (BSD Style License):
-*  Copyright (c) 2009, 2011
-*  Software Technology Group
-*  Department of Computer Science
-*  Technische Universität Darmstadt
-*  All rights reserved.
+/*  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions are met:
@@ -30,31 +25,36 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat
+package de.tud.cs.st.bat.resolved.analyses.errors
+import org.scalatest.FunSuite
+import de.tud.cs.st.bat.resolved.reader.Java6Framework
+import de.tud.cs.st.bat.resolved.analyses.ExceptionAnalyser
 
-import org.scalatest.Suites
+
 
 /**
- * Suite for security analysis tests
- *
  * @author Dennis Siebert
  */
-@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class SecurityAnalysisSuite extends Suites(
+//@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
+class GeneralExceptionsCaughtTest extends FunSuite {
 
-	/*
-		 * Access & Allocation Tests
-		 */
-	new resolved.analyses.aa.ArrayTest,
-	new resolved.analyses.aa.AssignTest,
-	new resolved.analyses.aa.FieldTest,
-	new resolved.analyses.aa.RandomSeedTest, 
-	//	new resolved.analyses.aa.FixedExpressionTest
-	//	new resolved.analyses.aa.ObjectRefTest
+	private val classA = Java6Framework.ClassFile("test/classfiles/Errors.zip", "errors/exceptions/TooGeneralException.class")
+	assert(classA ne null)
+
+	private val classB = Java6Framework.ClassFile("test/classfiles/Errors.zip", "errors/exceptions/HandledException.class")
+	assert(classB ne null)
+
+	private val exceptionAnalyser = ExceptionAnalyser
+
+	test("Excecption to General") {
+
+		val result = exceptionAnalyser.checkForOverlyBroadExceptionsCatched(classA)
+		assert(result.size == 1)
+	}
 	
-	/*
-	 * 
-	 */ 
-	new resolved.analyses.errors.GeneralExceptionsCaughtTest,
-	new resolved.analyses.errors.GeneralExceptionThrownTest
-	)
+	test("Exception spezialized") {
+
+		val result = exceptionAnalyser.checkForOverlyBroadExceptionsCatched(classB)
+		assert(result.size == 0)
+	}
+}

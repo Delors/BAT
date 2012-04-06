@@ -170,7 +170,7 @@ object AccessAnalyser extends AccessAnalyser {
 	}
 
 	/**
-	 * checks if a if or while statement contains a fixed boolean expression and therefore is always true or false
+	 * checks if a random object is created with a predicatble seed
 	 * NOT IMPLEMENTED YET
 	 */
 	def RandomSeedAnalyser(classFile : ClassFile) = {

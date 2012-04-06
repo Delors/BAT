@@ -30,31 +30,28 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat
-
-import org.scalatest.Suites
+package errors.exceptions;
 
 /**
- * Suite for security analysis tests
- *
+ * Unhandled errors
+ * 
+ * The software catches potential errors but does not handle the specific error
+ * to just let it compile. Errors or intrusions maybe unseen.
+ * 
  * @author Dennis Siebert
+ * 
  */
-@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class SecurityAnalysisSuite extends Suites(
+public class HandledException {
 
-	/*
-		 * Access & Allocation Tests
-		 */
-	new resolved.analyses.aa.ArrayTest,
-	new resolved.analyses.aa.AssignTest,
-	new resolved.analyses.aa.FieldTest,
-	new resolved.analyses.aa.RandomSeedTest, 
-	//	new resolved.analyses.aa.FixedExpressionTest
-	//	new resolved.analyses.aa.ObjectRefTest
-	
-	/*
-	 * 
-	 */ 
-	new resolved.analyses.errors.GeneralExceptionsCaughtTest,
-	new resolved.analyses.errors.GeneralExceptionThrownTest
-	)
+	private void error() {
+		try {
+			doSomething();
+		} catch (IllegalArgumentException e) {
+			String catched = "Did something";
+		}
+	}
+
+	private void doSomething() throws IllegalArgumentException {
+		System.out.print("test");
+	}
+}
