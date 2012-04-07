@@ -30,42 +30,28 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat
-
-import org.scalatest.Suites
+package de.tud.cs.st.util.perf
 
 /**
- * Runs all tests related to BAT.
+ * Methods related to the measuring of an application's memory performance.
  *
  * @author Michael Eichberg
- * @author Sebastian Hartte
- * @author Thomas Schlosser
  */
-@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class BATSuite extends Suites(
+object MemoryUsage {
 
-    //
-    // QUICK TESTS
-    // (in alphabetical order)
-    //
-    new resolved.ArrayTypeTest,
-    new resolved.AttributesTest,
-    new resolved.FieldTypeTest,
-    new resolved.MethodDescriptorTest,
-    new resolved.ObjectTypeTest,
-    new resolved.SourceElementIDsTest,
+    /**
+     * Measures the amount of memory that is used as a side-effect
+     * of executing the given method.
+     */
+    def apply[T](mu: (Long) ⇒ Unit)(f: ⇒ T): T = {
+        val memoryMXBean = java.lang.management.ManagementFactory.getMemoryMXBean
+        memoryMXBean.gc()
+        val usedBefore = memoryMXBean.getHeapMemoryUsage.getUsed
+        val r = f
+        memoryMXBean.gc()
+        val usedAfter = memoryMXBean.getHeapMemoryUsage.getUsed
+        mu(usedAfter - usedBefore)
+        r
+    }
 
-    new resolved.reader.SignaturesTest,
-    
-    new resolved.analyses.ProjectTest,
-
-    new resolved.dependency.DependenciesToPrimitiveTypesTest,
-    new resolved.dependency.DependencyExtractorTest,
-    new resolved.dependency.UseIDOfBaseTypeForArrayTypesTest,
-
-    //
-    // LONG-RUNNING TESTS
-    //
-    new LoadClassFilesTest,
-    new resolved.dependency.ExtractDependenciesFromClassFilesTest
-)
+}

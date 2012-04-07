@@ -30,7 +30,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package bugs;
+package cornercases;
 
 /**
  * This class was used to create a class file with some well defined issues. The created class is
@@ -41,17 +41,13 @@ package bugs;
  *
  * @author Michael Eichberg
  */
-public abstract class AbstractA implements Comparable<Integer> {
+public class ArrayClone {
 
-	public boolean equals(SuperA obj) {
-		return super.equals(obj);
-	}
-
-	public abstract boolean equals(AbstractA obj);
-
-	@Override
-	public int compareTo(Integer o) {
-		return 0;
+	public static void main(String[] args) {
+		// calling clone on an array results in code where the receiver of
+		// the method is actually the array and not a class type.
+		String[] clone = args.clone();
+		System.out.println(args.toString() + " " + clone.toString());
 	}
 
 }
