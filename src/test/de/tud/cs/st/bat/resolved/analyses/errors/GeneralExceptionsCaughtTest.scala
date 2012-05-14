@@ -35,10 +35,10 @@ import de.tud.cs.st.bat.resolved.analyses.ExceptionAnalyser
 /**
  * @author Dennis Siebert
  */
-//@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
+@org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
 class GeneralExceptionsCaughtTest extends FunSuite {
 
-	private val classA = Java6Framework.ClassFile("test/classfiles/Errors.zip", "errors/exceptions/TooGeneralException.class")
+		private val classA = Java6Framework.ClassFile("test/classfiles/Errors.zip", "errors/exceptions/TooGeneralException.class")
 	assert(classA ne null)
 
 	private val classB = Java6Framework.ClassFile("test/classfiles/Errors.zip", "errors/exceptions/HandledException.class")
@@ -48,13 +48,15 @@ class GeneralExceptionsCaughtTest extends FunSuite {
 
 	test("Excecption to General") {
 
-		val result = exceptionAnalyser.checkForOverlyBroadExceptionsCatched(classA)
+		val result = exceptionAnalyser.checkForOverlyBroadExceptionCatched(classA)
 		assert(result.size == 1)
 	}
 	
 	test("Exception spezialized") {
 
-		val result = exceptionAnalyser.checkForOverlyBroadExceptionsCatched(classB)
+		val result = exceptionAnalyser.checkForOverlyBroadExceptionCatched(classB)
 		assert(result.size == 0)
 	}
+	
+	
 }
