@@ -30,60 +30,36 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 */
-package de.tud.cs.st.bat.resolved.analyses.input
+package de.tud.cs.st.bat.resolved.analyses.auth
 import org.scalatest.FunSuite
 import de.tud.cs.st.bat.resolved.reader.Java6Framework
-import de.tud.cs.st.bat.resolved.analyses.AccessAnalyser
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import de.tud.cs.st.bat.resolved.analyses.InputAnalyser
+import de.tud.cs.st.bat.resolved.analyses.AuthAnalyser
 
 /**
  * @author Dennis Siebert
  */
 @org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
-class InputTest extends FlatSpec with ShouldMatchers {
+class AuthTest extends FlatSpec with ShouldMatchers {
 
-	private val classA = Java6Framework.ClassFile("test/classfiles/Input.zip", "input/Command.class")
+	private val classA = Java6Framework.ClassFile("test/classfiles/Auth.zip", "auth/Password.class")
 	assert(classA ne null)
-
-	private val classB = Java6Framework.ClassFile("test/classfiles/Input.zip", "input/PathTraversal.class")
+	
+	private val classB = Java6Framework.ClassFile("test/classfiles/Auth.zip", "auth/HardCodedSQLCredentials.class")
 	assert(classB ne null)
 
-	private val classC = Java6Framework.ClassFile("test/classfiles/Input.zip", "input/DownloadedCode.class")
-	assert(classC ne null)
+	private val authAnalyser = AuthAnalyser
 
-	private val classD = Java6Framework.ClassFile("test/classfiles/Input.zip", "input/SQLInjection.class")
-	assert(classD ne null)
+	behavior of "Authentication Analyser"
 
-	private val classE = Java6Framework.ClassFile("test/classfiles/Input.zip", "input/Redirection.class")
-	assert(classE ne null)
-	
-	private val inputAnalyser = InputAnalyser
-
-	behavior of "Input Analyser"
-
-	it should "analyse 1 special user command execution" in {
-		val result = inputAnalyser.specialElementsInCommand(classA)
-		assert(result.size == 1)
-	}
-
-	it should "analyse 1 path traversal" in {
-		val result = inputAnalyser.pathTraversal(classB)
-		assert(result.size == 1)
-	}
-
-	it should "analyse 2 downloaded classes" in {
-		val result = inputAnalyser.downloadedCode(classC)
-		assert(result.size == 2)
-	}
-	it should "analyse 1 injected sql command" in {
-		val result = inputAnalyser.SQLInjection(classD)
-		assert(result.size == 1)
+	it should "analyse 7 misused password fields" in {
+		val result = authAnalyser.checkForPasswords(classA)
+		assert(result.size == 7)
 	}
 	
-	it should "analyse 1 unconfirmed redirection" in {
-		val result = inputAnalyser.uncheckedRedirection(classE)
+	it should "analyse 6 hard-coded credentials for database connections" in {
+		val result = authAnalyser.hardCodedSQLCredentials(classB)
 		assert(result.size == 1)
 	}
 

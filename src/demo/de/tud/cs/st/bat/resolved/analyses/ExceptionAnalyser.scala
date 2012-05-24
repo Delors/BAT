@@ -155,14 +155,14 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 	}
 
 	def topLevelShouldCatchItAll(classFile : ClassFile) = {
-		var topLevelTrown : List[(ClassFile, Method)] = Nil
+		var topLevelThrown : List[(ClassFile, Method)] = Nil
 		for (method ← classFile.methods if method.body.isDefined && (method.name.equals("doGet") || method.name.equals("doPost"))) {
 			method.attributes.foreach(att => att match {
-				case et : ExceptionTable => topLevelTrown = (classFile, method) :: topLevelTrown
+				case et : ExceptionTable => topLevelThrown = (classFile, method) :: topLevelThrown
 				case _ =>
 			})
 		}
-		topLevelTrown
+		topLevelThrown
 
 	}
 
