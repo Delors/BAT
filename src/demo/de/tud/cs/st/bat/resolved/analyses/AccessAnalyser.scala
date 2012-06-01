@@ -52,72 +52,20 @@ import de.tud.cs.st.bat.resolved.LDC2_W
 import de.tud.cs.st.bat.resolved.ConstantLong
 import de.tud.cs.st.bat.resolved.ConstantInteger
 import de.tud.cs.st.bat.resolved.LDC2_W
-
+import de.tud.cs.st.bat.resolved.GETSTATIC
+import de.tud.cs.st.bat.resolved.INVOKESTATIC
+import de.tud.cs.st.bat.resolved.MethodDescriptor
+import de.tud.cs.st.bat.resolved.IntegerType
+import de.tud.cs.st.bat.resolved.INVOKEVIRTUAL
+import de.tud.cs.st.bat.resolved.VoidType
+import de.tud.cs.st.bat.resolved.BooleanType
 
 /**
  *
  * @author Dennis Siebert
  */
-class AccessAnalyser
-object AccessAnalyser extends AccessAnalyser {
-	def main(args : Array[String]) {
-
-		if (args.length == 0 || !args.forall(arg ⇒ arg.endsWith(".zip") || arg.endsWith(".jar"))) {
-			printUsage
-			sys.exit(1)
-		}
-
-		for (arg ← args) {
-			val file = new java.io.File(arg)
-			if (!file.canRead() || file.isDirectory()) {
-				println("The file: " + file + " cannot be read.");
-				printUsage
-				sys.exit(1)
-			}
-		}
-
-		init(args)
-
-		sys.exit(0)
-	}
-	private val debug = true;
-
-	private val CountingPerformanceEvaluator = new PerformanceEvaluation with Counting
-	import CountingPerformanceEvaluator._
-	import de.tud.cs.st.util.perf._
-
-	private def printUsage : Unit = {
-		println("Usage: java …Main <ZIP or JAR file containing class files>+")
-		println("(c) 2011 Michael Eichberg (eichberg@informatik.tu-darmstadt.de)")
-	}
-
-	def init(zipFiles : Array[String]) {
-		var classHierarchy = new ClassHierarchy
-
-		var classFilesCount = 0
-		val classFiles = time(t ⇒ println("Reading all class files took: " + nsToSecs(t))) {
-			for (zipFile ← zipFiles; classFile ← Java6Framework.ClassFiles(zipFile)) yield {
-				classFilesCount += 1
-				classHierarchy = classHierarchy + classFile
-				classFile
-			}
-		}
-		println("Classfiles: " + classFilesCount)
-
-		val accessInstructions = time(t ⇒ println("Access Handling " + nsToSecs(t))) {
-			for (classFile ← classFiles) {
-				analyse(classFile)
-			}
-		}
-	}
-
-	private def analyse(classFile : de.tud.cs.st.bat.resolved.reader.Java6Framework.ClassFile) : Unit = {
-		var psNotFinal = FieldNotFinal(classFile)
-		var Arrays = ArrayPSF(classFile);
-		var assignings = AssigningInsteadCompare(classFile)
-		printResults(psNotFinal.size, Arrays.size, assignings.size)
-	}
-
+class AccessAnalyser extends Analyser 
+object AccessAnalyser extends AccessAnalyser{
 	/**
 	 * checks for fields which are static and public and not final. In most cases they should be declared final, too.
 	 */
@@ -138,121 +86,91 @@ object AccessAnalyser extends AccessAnalyser {
 	}
 
 	/**
-	 * checks for assigning inside if statement instead of checking boolean value or compare for a boolean value
-	 */
-	def AssigningInsteadCompare(classFile : ClassFile) = {
-		var wrongIfStatement : List[(ClassFile, Method)] = Nil
-		for (method ← classFile.methods) {
-			var instructions = method.body.get.instructions
-			var end = false
-			var assigning = false;
-			var i = 0
-			while (!end && i < instructions.size) {
-
-				instructions.apply(i) match {
-					case ISTORE_0 | ISTORE_1 | ISTORE_2 | ISTORE_3 | ISTORE(_) ⇒
-						assigning = true;
-						i += 1
-					case IFEQ(_) ⇒
-						if (assigning) {
-							end = true;
-							wrongIfStatement = (classFile, method) :: wrongIfStatement
-						}
-						assigning = false
-						i += 1
-					case _ ⇒
-						assigning = false
-						i += 1
-				}
-			}
-		}
-		wrongIfStatement
-	}
-
-	/**
 	 * checks if a random object is created with a predicatble seed
 	 * NOT IMPLEMENTED YET
 	 */
 	def RandomSeedAnalyser(classFile : ClassFile) = {
 		var predictableSeed : List[(ClassFile, Method)] = Nil
 		val randomType = ObjectType("java/util/Random")
-		for (method ← classFile.methods if !method.body.get.instructions.isEmpty) {
-			var instructions = method.body.get.instructions
-			var end = false
-			var assigning = false;
-			var i = 0
-			var lastInstruction = instructions.apply(i)
-			while (!end && i < instructions.size) {
-				instructions.apply(i) match {
-					case INVOKESPECIAL(randomType, _, _) ⇒
-						lastInstruction match {
-							case LDC2_W(ConstantLong(_)) | LDC2_W(ConstantInteger(_)) ⇒
-							predictableSeed = (classFile,method) :: predictableSeed
-							case _ ⇒
-
-						}
-						i += 1
-					case _ ⇒
-						if (instructions.apply(i) != null) {
-							lastInstruction = instructions.apply(i)
-						}
-						i += 1
+		val system = ObjectType("java/lang/System")
+		for (method ← classFile.methods; if !method.body.isEmpty && !method.body.get.instructions.isEmpty) {
+			var constant, millis, random = false
+			for (instruction ← method.body.get.instructions) {
+				instruction match {
+					case is : INVOKESTATIC =>
+						if (is.declaringClass.equals(system) && is.name.equals("currentTimeMillis")) millis = true
+					case isp : INVOKESPECIAL => if (isp.declaringClass.equals(randomType)) random = true
+					case LDC2_W(ConstantLong(_)) => constant = true
+					case _ =>
 				}
 			}
+			if ((constant || millis) && random) predictableSeed = (classFile, method) :: predictableSeed
 		}
 		predictableSeed
 	}
 
-	/**
-	 * checks if a if or while statement contains a fixed boolean expression and therefore is always true or false
-	 * NOT IMPLEMENTED YET
-	 */
-	def FixedExpresson(classFile : ClassFile) = {
-		debug(classFile)
+	def protectedFields(classFile : ClassFile) = {
+		for (
+			field ← classFile.fields if field.isProtected && classFile.isFinal
+		) yield (classFile, field)
 	}
 
-	/**
-	 * checks for just comparing the object reference then the actual object content instead
-	 * NOT IMPLEMENTED YET
-	 */
-	def ComparbjectReference(classFile : ClassFile) = {
-		debug(classFile)
+	def unsafeUseOfJNI(classFile : ClassFile) = {
+
+		var JNI : List[(ClassFile, Method)] = Nil
+		for (method <- classFile.methods if method.body.isDefined && method.body.get != null) {
+			if (method.body.get.instructions.exists({
+				case INVOKESTATIC(ObjectType("java/lang/System"), "loadLibrary", _) => true;
+				case _ ⇒ false;
+			})) {
+				JNI = (classFile, method) :: JNI
+			}
+		}
+		JNI
 	}
 
-	/**
-	 * prints the current results of both analysis
-	 */
-	private def printResults(psNotFinalSize : Integer, ArraysSize : Integer, AssignSize : Integer) : Unit = {
-
-		println
-
-		println("Found public static fields without final modifier: " + psNotFinalSize)
-		println("--------------------");
-
-		println("Found public static final arrays " + ArraysSize)
-		println("--------------------");
-
-		println("Found wrong if assignings " + AssignSize)
-		println("--------------------");
-	}
+	
 
 	/**
 	 * printing class and methodname + bytecode instructions + corresponding line number
 	 */
-	private def debug(classFile : de.tud.cs.st.bat.resolved.reader.Java6Framework.ClassFile) : Unit = {
+	private def debug(classFile : ClassFile) : Unit = {
 		/*
 	   * For Source code purposes
 	   */
-		var line = 0
+
 		println(classFile.thisClass.className)
 
 		for (method ← classFile.methods) {
 			println(method.name)
+			println(method)
+			println(method.isAbstract)
+			var line = 0
+			for (instruction ← method.body.get.instructions if method.body.isDefined && !method.body.get.instructions.isEmpty) {
+
+				if (instruction != null) println("\t" + line + " " + instruction)
+				line += 1
+			}
 		}
-		for (method ← classFile.methods; instruction ← method.body.get.instructions if !method.body.get.instructions.isEmpty) {
+
+		println
+	}
+
+	private def debugMethod(method : Method) : Unit = {
+		/*
+	   * For Source code purposes
+	   */
+
+		println(method.name)
+		println(method.descriptor)
+
+		var line = 0
+		for (instruction ← method.body.get.instructions if !method.body.get.instructions.isEmpty) {
+
 			if (instruction != null) println("\t" + line + " " + instruction)
 			line += 1
 		}
+
 		println
 	}
 

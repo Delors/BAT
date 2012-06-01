@@ -42,19 +42,9 @@ import org.scalatest.Suites
 @org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
 class SecurityAnalysisSuite extends Suites(
 
-	/*
-		 * Access & Allocation Tests
-		 */
-	new resolved.analyses.aa.ArrayTest,
-	new resolved.analyses.aa.AssignTest,
-	new resolved.analyses.aa.FieldTest,
-	new resolved.analyses.aa.RandomSeedTest, 
-	//	new resolved.analyses.aa.FixedExpressionTest
-	//	new resolved.analyses.aa.ObjectRefTest
+	new resolved.analyses.errors.Errors,
+	new resolved.analyses.aa.AATest,
+	new resolved.analyses.auth.AuthTest,
+	new resolved.analyses.input.InputTest,
+	new resolved.analyses.calls.CallsTest)
 	
-	/*
-	 * 
-	 */ 
-	new resolved.analyses.errors.GeneralExceptionsCaughtTest,
-	new resolved.analyses.errors.GeneralExceptionThrownTest
-	)

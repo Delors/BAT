@@ -149,11 +149,12 @@ object InputAnalyser extends InputAnalyser {
 //		debug(classFile)
 		
 		var redirected : List[(ClassFile, Method)] = Nil
+		val string= ObjectType("java/lang/String")
 		val request = ObjectType("javax/servlet/http/HttpServletRequest")
 		val response = ObjectType("javax/servlet/http/HttpServletResponse")
 
 		for (method ← classFile.methods; if !method.body.isEmpty && !method.body.get.instructions.isEmpty) {
-			var getParameter, redirect = false
+			var getParameter, redirect,change = false
 			for (instruction ← method.body.get.instructions) {
 				instruction match {
 					case ii : INVOKEINTERFACE =>
@@ -162,11 +163,12 @@ object InputAnalyser extends InputAnalyser {
 						} else if(ii.name.equals("sendRedirect")&& ii.declaringClass.equals(response)){
 							redirect = true	
 						}
+					case iv : INVOKEVIRTUAL => if(iv.declaringClass.equals(string))change = true
 					case _ =>
 				}
 
 			}
-			if (getParameter && redirect) redirected = (classFile, method) :: redirected
+			if (getParameter && redirect && !change) redirected = (classFile, method) :: redirected
 		}
 		redirected
 	}

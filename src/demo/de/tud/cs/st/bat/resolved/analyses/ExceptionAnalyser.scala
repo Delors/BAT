@@ -16,80 +16,79 @@ import de.tud.cs.st.bat.resolved.ArrayType
 import scala.collection.mutable.HashMap
 import de.tud.cs.st.bat.resolved.INVOKESPECIAL
 
-class ExceptionAnalyser
+class ExceptionAnalyser extends Analyser
 object ExceptionAnalyser extends ExceptionAnalyser {
-
-//	private var hashMap = new HashMap[String, Int]()
-//
-//	private def initMap = {
-//		hashMap.update("exTh", 0)
-//		hashMap.update("exCa", 0)
-//		hashMap.update("expose", 0)
-//		hashMap.update("LD", 0)
-//		hashMap.update("DcM", 0)
-//		hashMap.update("DcJ", 0)
-//	}
+	//	private var hashMap = new HashMap[String, Int]()
+	//
+	//	private def initMap = {
+	//		hashMap.update("exTh", 0)
+	//		hashMap.update("exCa", 0)
+	//		hashMap.update("expose", 0)
+	//		hashMap.update("LD", 0)
+	//		hashMap.update("DcM", 0)
+	//		hashMap.update("DcJ", 0)
+	//	}
 
 	private val debug = true;
 
-//	private val CountingPerformanceEvaluator = new PerformanceEvaluation with Counting
-//	import CountingPerformanceEvaluator._
-//
-//	import de.tud.cs.st.util.perf._
-//
-//	private def printUsage : Unit = {
-//		println("Usage: java …Main <ZIP or JAR file containing class files>+")
-//		println("(c) 2011 Michael Eichberg (eichberg@informatik.tu-darmstadt.de)")
-//	}
-//
-//	def main(args : Array[String]) {
-//
-//		if (args.length == 0 || !args.forall(arg ⇒ arg.endsWith(".zip") || arg.endsWith(".jar"))) {
-//			printUsage
-//			sys.exit(1)
-//		}
-//
-//		for (arg ← args) {
-//			val file = new java.io.File(arg)
-//			if (!file.canRead() || file.isDirectory()) {
-//				println("The file: " + file + " cannot be read.");
-//				printUsage
-//				sys.exit(1)
-//			}
-//		}
-//
-//		init(args)
-//
-//		sys.exit(0)
-//	}
-//
-//	def init(zipFiles : Array[String]) {
-//		var classHierarchy = new ClassHierarchy
-//
-//		var classFilesCount = 0
-//		val classFiles = time(t ⇒ println("Reading all class files took: " + nsToSecs(t))) {
-//			for (zipFile ← zipFiles; classFile ← Java6Framework.ClassFiles(zipFile)) yield {
-//				classFilesCount += 1
-//				classHierarchy = classHierarchy + classFile
-//				classFile
-//			}
-//		}
-//		val exceptionInstructions = time(t ⇒ println("Exception Handling took: " + nsToSecs(t))) {
-//			for (classFile ← classFiles) {
-//				analyse(classFile)
-//			}
-//		}
-//	}
+	//	private val CountingPerformanceEvaluator = new PerformanceEvaluation with Counting
+	//	import CountingPerformanceEvaluator._
+	//
+	//	import de.tud.cs.st.util.perf._
+	//
+	//	private def printUsage : Unit = {
+	//		println("Usage: java …Main <ZIP or JAR file containing class files>+")
+	//		println("(c) 2011 Michael Eichberg (eichberg@informatik.tu-darmstadt.de)")
+	//	}
+	//
+	//	def main(args : Array[String]) {
+	//
+	//		if (args.length == 0 || !args.forall(arg ⇒ arg.endsWith(".zip") || arg.endsWith(".jar"))) {
+	//			printUsage
+	//			sys.exit(1)
+	//		}
+	//
+	//		for (arg ← args) {
+	//			val file = new java.io.File(arg)
+	//			if (!file.canRead() || file.isDirectory()) {
+	//				println("The file: " + file + " cannot be read.");
+	//				printUsage
+	//				sys.exit(1)
+	//			}
+	//		}
+	//
+	//		init(args)
+	//
+	//		sys.exit(0)
+	//	}
+	//
+	//	def init(zipFiles : Array[String]) {
+	//		var classHierarchy = new ClassHierarchy
+	//
+	//		var classFilesCount = 0
+	//		val classFiles = time(t ⇒ println("Reading all class files took: " + nsToSecs(t))) {
+	//			for (zipFile ← zipFiles; classFile ← Java6Framework.ClassFiles(zipFile)) yield {
+	//				classFilesCount += 1
+	//				classHierarchy = classHierarchy + classFile
+	//				classFile
+	//			}
+	//		}
+	//		val exceptionInstructions = time(t ⇒ println("Exception Handling took: " + nsToSecs(t))) {
+	//			for (classFile ← classFiles) {
+	//				checkF(classFile)
+	//			}
+	//		}
+	//	}
 
-//	def analyse(classFile : ClassFile) = {
-//
-//		hashMap.update("exTh", hashMap.get("exTh").get + checkForOverlyBroadExceptionThrown(classFile).length)
-//		hashMap.update("exCa", hashMap.get("exCa").get + checkForOverlyBroadExceptionCatched(classFile).length)
-//		hashMap.update("expose", hashMap.get("expose").get + checkForExposureInErrorHandling(classFile).length)
-//		hashMap.update("LD", hashMap.get("LD").get + ensureLogginDicipline(classFile).length)
-//		hashMap.update("DcM", hashMap.get("DcM").get + huntForDebugCodeMain(classFile).length)
-//		hashMap.update("DcJ", hashMap.get("DcJ").get + huntForDebugCodeJUnit(classFile).length)
-//	}
+	//	def analyse(classFile : ClassFile) = {
+	//
+	//		hashMap.update("exTh", hashMap.get("exTh").get + checkForOverlyBroadExceptionThrown(classFile).length)
+	//		hashMap.update("exCa", hashMap.get("exCa").get + checkForOverlyBroadExceptionCatched(classFile).length)
+	//		hashMap.update("expose", hashMap.get("expose").get + checkForExposureInErrorHandling(classFile).length)
+	//		hashMap.update("LD", hashMap.get("LD").get + ensureLogginDicipline(classFile).length)
+	//		hashMap.update("DcM", hashMap.get("DcM").get + huntForDebugCodeMain(classFile).length)
+	//		hashMap.update("DcJ", hashMap.get("DcJ").get + huntForDebugCodeJUnit(classFile).length)
+	//	}
 
 	def checkForOverlyBroadExceptionCatched(classFile : ClassFile) = {
 		val exceptionType = ObjectType("java/lang/Exception")
@@ -122,18 +121,29 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 
 	def checkForExposureInErrorHandling(classFile : ClassFile) = {
 		var exposures : List[(ClassFile, Method)] = Nil
+		val system = ObjectType("java/lang/System")
 		val printStream = ObjectType("java/io/PrintStream")
 
-		for (method ← classFile.methods; if !method.body.isEmpty && !method.body.get.instructions.isEmpty) {
-			for (instruction ← method.body.get.instructions) {
-				if (!method.body.get.exceptionHandlers.isEmpty) {
-					instruction match {
-						case iv : INVOKEVIRTUAL => if (iv.name.equals("printStackTrace")) exposures = (classFile, method) :: exposures
-						case gs : GETSTATIC => if (gs.fieldType.equals(printStream)) exposures = (classFile, method) :: exposures
-						case _ =>
+		for (method ← classFile.methods; if !method.body.isEmpty && !method.body.get.instructions.isEmpty && !method.body.get.exceptionHandlers.isEmpty) {
+			var exposure = false;
+			for (exHandler <- method.body.get.exceptionHandlers) {
+				if (exHandler.endPC != exHandler.handlerPC) {
+					var line = 0
+					for (instruction ← method.body.get.instructions) {
+						instruction match {
+							case iv : INVOKEVIRTUAL => if (iv.name.equals("printStackTrace") && line >= exHandler.handlerPC) exposure = true
+							case gs : GETSTATIC => if (gs.declaringClass.equals(system) && gs.fieldType.equals(printStream) && line >= exHandler.handlerPC) {
+								exposure = true
+							}
+							case _ =>
+						}
+						line += 1
+
 					}
 				}
+
 			}
+			if (exposure) exposures = (classFile, method) :: exposures
 		}
 		exposures
 	}
@@ -243,6 +253,22 @@ object ExceptionAnalyser extends ExceptionAnalyser {
 				if (instruction != null) println("\t" + line + " " + instruction)
 				line += 1
 			}
+		}
+
+		println
+	}
+
+	private def debugMethod(method : Method) : Unit = {
+		/*
+	   * For Source code purposes
+	   */
+
+		println(method.name)
+		var line = 0
+		for (instruction ← method.body.get.instructions if !method.body.get.instructions.isEmpty) {
+
+			if (instruction != null) println("\t" + line + " " + instruction)
+			line += 1
 		}
 
 		println
