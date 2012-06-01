@@ -67,7 +67,7 @@ object AuthAnalyser extends AuthAnalyser {
 	}
 
 	def hardCodedSQLCredentials(classFile : ClassFile) = {
-
+		debug(classFile)
 		var sqlConnections : List[(ClassFile, Method)] = Nil
 
 		val driverManager = ObjectType("java/sql/DriverManager")

@@ -260,15 +260,15 @@ object Analyser extends Analyser{
 		var classesWithPublicFinalizeMethods = callAnalyser.classesWithPublicFinalizeMethods(classFile).length
 		var classesWithoutDefaultConstructor = callAnalyser.classesWithoutDefaultConstructor(classFile).size
 
-		analysis.cloneableNoClone = cloneableNoClone
-		analysis.clonableWithoutSuperClone = clonableWithoutSuperClone
-		analysis.cloneButNotCloneable = cloneButNotCloneable
-		analysis.covariantCompareToMethods = covariantCompareToMethods
-		analysis.garbageCollectingMethods = garbageCollectingMethods
-		analysis.methodsThatCallRunFinalizersOnExit = methodsThatCallRunFinalizersOnExit
-		analysis.abstractCovariantEquals = abstractCovariantEquals
-		analysis.classesWithPublicFinalizeMethods = classesWithPublicFinalizeMethods
-		analysis.classesWithoutDefaultConstructor = classesWithoutDefaultConstructor
+		analysis.cloneableNoClone += cloneableNoClone
+		analysis.clonableWithoutSuperClone += clonableWithoutSuperClone
+		analysis.cloneButNotCloneable += cloneButNotCloneable
+		analysis.covariantCompareToMethods += covariantCompareToMethods
+		analysis.garbageCollectingMethods += garbageCollectingMethods
+		analysis.methodsThatCallRunFinalizersOnExit += methodsThatCallRunFinalizersOnExit
+		analysis.abstractCovariantEquals += abstractCovariantEquals
+		analysis.classesWithPublicFinalizeMethods += classesWithPublicFinalizeMethods
+		analysis.classesWithoutDefaultConstructor += classesWithoutDefaultConstructor
 
 		stringBuilder.append(cloneableNoClone + ";")
 		stringBuilder.append(clonableWithoutSuperClone + ";")
