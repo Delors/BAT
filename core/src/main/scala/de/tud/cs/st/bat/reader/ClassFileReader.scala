@@ -338,7 +338,7 @@ trait ClassFileReader extends Constant_PoolAbstractions
         val interfaces = Interfaces (ci, in, cp)
         val fields = Fields (ci, in, cp)
         val methods = Methods (ci, in, cp)
-        val attributes = Attributes (AttributesParent.ClassFile, cp, in)
+        val attributes = Attributes (AttributesParents.ClassFile, cp, in)
 
         ClassFile (
             ci,

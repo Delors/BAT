@@ -325,7 +325,7 @@ final class ObjectType private (val className : String) extends ReferenceType {
 object ObjectType {
 
    // FIXME potential memory leak...
-   private val cache : scala.collection.mutable.Map[String, ObjectType] = scala.collection.mutable.Map()
+   val cache : scala.collection.mutable.Map[String, ObjectType] = scala.collection.mutable.Map()
 
    /**
      * Factory method to create ObjectTypes.<br />
@@ -381,7 +381,7 @@ final class ArrayType private (val componentType : FieldType) extends ReferenceT
 final object ArrayType {
 
    // FIXME potential memory leak...
-   private val cache : scala.collection.mutable.Map[FieldType, ArrayType] = scala.collection.mutable.Map()
+   val cache : scala.collection.mutable.Map[FieldType, ArrayType] = scala.collection.mutable.Map()
 
    /**
      * Factory method to create objects of type <code>ArrayType</code>.

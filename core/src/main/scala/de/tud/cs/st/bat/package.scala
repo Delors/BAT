@@ -52,9 +52,9 @@ package object bat
 
     type AccessFlagsContext = AccessFlagsContexts.Value
 
-    type AttributeParent = AttributesParent.Value
+    type AttributeParent = AttributesParents.Value
 
-    type AttributesParent = AttributesParent.Value
+    type AttributesParent = AttributesParents.Value
 
     type ConstantPoolTag = ConstantPoolTags.Value
 

@@ -117,10 +117,10 @@ trait ConstantPoolBinding extends Constant_PoolReader {
 
         override def asSignature(implicit ap: AttributeParent) = { // should be called at most once => caching doesn't make sense
             ap match {
-                case AttributesParent.Field     ⇒ SignatureParser.parseFieldTypeSignature(value)
-                case AttributesParent.ClassFile ⇒ SignatureParser.parseClassSignature(value)
-                case AttributesParent.Method    ⇒ SignatureParser.parseMethodTypeSignature(value)
-                case AttributesParent.Code      ⇒ sys.error("signature attributes stored in a code_attribute's attributes table are non-standard")
+                case AttributesParents.Field     ⇒ SignatureParser.parseFieldTypeSignature(value)
+                case AttributesParents.ClassFile ⇒ SignatureParser.parseClassSignature(value)
+                case AttributesParents.Method    ⇒ SignatureParser.parseMethodTypeSignature(value)
+                case AttributesParents.Code      ⇒ sys.error("signature attributes stored in a code_attribute's attributes table are non-standard")
             }
         }
         override def asConstantValue(implicit cp: Constant_Pool) = ConstantString(value) // required to support annotations; should be called at most once => caching doesn't make sense

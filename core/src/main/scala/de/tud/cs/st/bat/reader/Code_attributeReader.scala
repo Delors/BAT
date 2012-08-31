@@ -122,7 +122,7 @@ trait Code_attributeReader extends AttributeReader {
                                 )(cp)
                             }
                     },
-                    Attributes(AttributesParent.Code, cp, in)
+                    Attributes(AttributesParents.Code, cp, in)
                 )(cp)
             }
             )

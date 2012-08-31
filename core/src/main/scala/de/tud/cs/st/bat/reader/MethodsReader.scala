@@ -93,7 +93,7 @@ trait MethodsReader extends Constant_PoolAbstractions
             in.readUnsignedShort,
             in.readUnsignedShort,
             in.readUnsignedShort,
-            Attributes (AttributesParent.Method, cp, in)
+            Attributes (AttributesParents.Method, cp, in)
         )(cp)
     }
 }
