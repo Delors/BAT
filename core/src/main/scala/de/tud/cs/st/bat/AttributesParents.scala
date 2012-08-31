@@ -37,7 +37,7 @@ package de.tud.cs.st.bat
  *
  * @author Michael Eichberg
  */
-object AttributesParent extends Enumeration {
+object AttributesParents extends Enumeration {
     val ClassFile = Value
     val Field = Value
     val Method = Value
