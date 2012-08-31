@@ -38,10 +38,12 @@ import de.tud.cs.st.util.ControlAbstractions.repeat
 
 /**
  * Defines a template method to read in a class file's Method_info structure. 
- * 
+ *
  * @author Michael Eichberg
+ * @author Ralf Mitschke
  */
-trait MethodsReader extends Constant_PoolAbstractions {
+trait MethodsReader extends Constant_PoolAbstractions
+{
 
     //
     // ABSTRACT DEFINITIONS
@@ -49,18 +51,22 @@ trait MethodsReader extends Constant_PoolAbstractions {
 
     type Attributes
 
+    type Class_Info
+
     protected def Attributes(ap: AttributesParent,
                              cp: Constant_Pool,
                              in: DataInputStream): Attributes
 
     type Method_Info
-    implicit val Method_InfoManifest: ClassManifest[Method_Info]
 
-    def Method_Info(accessFlags: Int,
+    implicit def Method_InfoManifest: ClassManifest[Method_Info]
+
+    def Method_Info(declaringClass: Class_Info,
+                    accessFlags: Int,
                     name_index: Constant_Pool_Index,
                     descriptor_index: Constant_Pool_Index,
                     attributes: Attributes)(
-                        implicit constant_pool: Constant_Pool): Method_Info
+        implicit constant_pool: Constant_Pool): Method_Info
 
     //
     // IMPLEMENTATION
@@ -70,23 +76,24 @@ trait MethodsReader extends Constant_PoolAbstractions {
 
     private val NO_METHODS: Methods = Vector.empty
 
-    def Methods(in: DataInputStream, cp: Constant_Pool): Methods = {
+    def Methods(declaringClass: Class_Info, in: DataInputStream, cp: Constant_Pool): Methods = {
         val methods_count = in.readUnsignedShort
 
         if (methods_count == 0)
             NO_METHODS
         else
-            repeat(methods_count) {
-                Method_Info(in, cp)
+            repeat (methods_count) {
+                Method_Info (declaringClass, in, cp)
             }
     }
 
-    private def Method_Info(in: DataInputStream, cp: Constant_Pool): Method_Info = {
-        Method_Info(
+    private def Method_Info(declaringClass: Class_Info, in: DataInputStream, cp: Constant_Pool): Method_Info = {
+        Method_Info (
+            declaringClass,
             in.readUnsignedShort,
             in.readUnsignedShort,
             in.readUnsignedShort,
-            Attributes(AttributesParent.Method, cp, in)
+            Attributes (AttributesParent.Method, cp, in)
         )(cp)
     }
 }

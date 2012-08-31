@@ -42,16 +42,19 @@ import de.tud.cs.st.util.ControlAbstractions.repeat
  *
  * @author Michael Eichberg
  */
-trait InterfacesReader extends Constant_PoolAbstractions {
+trait InterfacesReader extends Constant_PoolAbstractions
+{
 
     //
     // ABSTRACT DEFINITIONS
     //
 
+    type Class_Info
+
     type Interface
     implicit val InterfaceManifest: ClassManifest[Interface]
 
-    def Interface(interface_index: Constant_Pool_Index)(implicit constant_pool: Constant_Pool): Interface
+    def Interface(declaringClass: Class_Info, interface_index: Constant_Pool_Index)(implicit constant_pool: Constant_Pool): Interface
 
     //
     // IMPLEMENTATION
@@ -61,12 +64,12 @@ trait InterfacesReader extends Constant_PoolAbstractions {
 
     private val NO_INTERFACES: Interfaces = Vector.empty
 
-    def Interfaces(in: DataInputStream, cp: Constant_Pool): Interfaces = {
+    def Interfaces(declaringClass: Class_Info, in: DataInputStream, cp: Constant_Pool): Interfaces = {
         val interfaces_count = in.readUnsignedShort
         if (interfaces_count == 0) return NO_INTERFACES
 
-        repeat(interfaces_count) {
-            Interface(in.readUnsignedShort)(cp)
+        repeat (interfaces_count) {
+            Interface (declaringClass, in.readUnsignedShort)(cp)
         }
     }
 

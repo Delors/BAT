@@ -30,33 +30,16 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package de.tud.cs.st
+package de.tud.cs.st.bat.resolved
 
 /**
- * BAT is a Java bytecode library written in Java.
- *
- * == This Package ==
- * Common constants and type definitions used across BAT.
- *
- * == General Design Rules ==
- * Unless explicitly noted, BAT does not make use of null values. I.e., all
- * methods do not take null values as parameters and will never return null
- * values.
- * NEW RULE: Every function that parses information (e.g., fields) can use structural information parsed higher up (e.g., class information)
- *
- *
- * @author Michael Eichberg
+ * @author Ralf Mitschke
  */
-package object bat
+case class ClassInfo(minorVersion: Int,
+                     majorVersion: Int,
+                     accessFlags: Int,
+                     thisClass: ObjectType,
+                     superClass: Option[ObjectType])
 {
 
-    type AccessFlagsContext = AccessFlagsContexts.Value
-
-    type AttributeParent = AttributesParent.Value
-
-    type AttributesParent = AttributesParent.Value
-
-    type ConstantPoolTag = ConstantPoolTags.Value
-
-    val CLASS_FILE_MAGIC = 0xCAFEBABE
 }

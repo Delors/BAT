@@ -34,17 +34,21 @@ package de.tud.cs.st.bat.resolved
 package reader
 
 import de.tud.cs.st.bat.reader.ClassFileReader
+import java.io.DataInputStream
 
 /**
  *
  * @author Michael Eichberg
  */
 trait ClassFileBinding
-        extends ClassFileReader
-        with ConstantPoolBinding
-        with AttributeBinding {
+    extends ClassFileReader
+    with ConstantPoolBinding
+    with AttributeBinding
+{
 
     type ClassFile = de.tud.cs.st.bat.resolved.ClassFile
+
+    type Class_Info = de.tud.cs.st.bat.resolved.ClassInfo
 
     type Method_Info = de.tud.cs.st.bat.resolved.Method
     type Methods <: IndexedSeq[Method_Info]
@@ -58,40 +62,60 @@ trait ClassFileBinding
     type Interfaces <: IndexedSeq[ObjectType]
     val InterfaceManifest: ClassManifest[Interface] = implicitly
 
-    def Interface(interface_index: Constant_Pool_Index)(implicit cp: Constant_Pool): Interface =
+
+    protected def Class_Info(minor_version: Int, major_version: Int, in: DataInputStream)(implicit cp: Constant_Pool) = {
+        ClassInfo (
+        minor_version, major_version,
+        in.readUnsignedShort,
+        in.readUnsignedShort.asObjectType,
+        // to handle the special case that this class file represents java.lang.Object
+        {
+            val super_class = in.readUnsignedShort
+            if (super_class == 0) None else Some (super_class.asObjectType)
+        }
+        )
+    }
+
+    def Interface(declaringClass: Class_Info, interface_index: Constant_Pool_Index)(implicit cp: Constant_Pool): Interface =
         interface_index.asObjectType
 
-    def Field_Info(access_flags: Int,
+    def Field_Info(declaringClass: Class_Info,
+                   access_flags: Int,
                    name_index: Constant_Pool_Index,
                    descriptor_index: Constant_Pool_Index,
                    attributes: Attributes)(
-                       implicit cp: Constant_Pool): Field_Info = {
-        new Field(access_flags, name_index.asString, descriptor_index.asFieldType, attributes)
+        implicit cp: Constant_Pool): Field_Info =
+    {
+        new Field (access_flags, name_index.asString, descriptor_index.asFieldType, attributes)
     }
 
-    def Method_Info(accessFlags: Int,
+    def Method_Info(declaringClass: Class_Info,
+                    accessFlags: Int,
                     name_index: Int,
                     descriptor_index: Int,
                     attributes: Attributes)(
-                        implicit cp: Constant_Pool): Method_Info = {
-        new Method(accessFlags, name_index.asString, descriptor_index.asMethodDescriptor, attributes)
+        implicit cp: Constant_Pool): Method_Info =
+    {
+        new Method (accessFlags, name_index.asString, descriptor_index.asMethodDescriptor, attributes)
     }
 
-    def ClassFile(minor_version: Int, major_version: Int,
-                  access_flags: Int,
-                  this_class: Int,
-                  super_class: Int,
+    def ClassFile(classInfo: Class_Info,
                   interfaces: Interfaces,
                   fields: Fields,
                   methods: Methods,
                   attributes: Attributes)(
-                      implicit cp: Constant_Pool): ClassFile = {
-        new ClassFile(
-            minor_version, major_version, access_flags,
-            this_class.asObjectType,
-            // to handle the special case that this class file represents java.lang.Object
-            { if (super_class == 0) None else Some(super_class.asObjectType) },
-            interfaces, fields, methods, attributes
+        implicit cp: Constant_Pool): ClassFile =
+    {
+        new ClassFile (
+            classInfo.minorVersion,
+            classInfo.majorVersion,
+            classInfo.accessFlags,
+            classInfo.thisClass,
+            classInfo.superClass,
+            interfaces,
+            fields,
+            methods,
+            attributes
         )
     }
 

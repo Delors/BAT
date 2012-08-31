@@ -40,25 +40,31 @@ import de.tud.cs.st.util.ControlAbstractions.repeat
 /**
  *
  * @author Michael Eichberg
+ * @author Ralf Mitschke
  */
-trait FieldsReader extends Constant_PoolAbstractions {
+trait FieldsReader extends Constant_PoolAbstractions
+{
 
     //
     // ABSTRACT DEFINITIONS
     //
 
     type Field_Info
-    implicit val Field_InfoManifest: ClassManifest[Field_Info]
+
+    type Class_Info
+
+    implicit def Field_InfoManifest: ClassManifest[Field_Info]
 
     type Attributes
 
     protected def Attributes(ap: AttributesParent, cp: Constant_Pool, in: DataInputStream): Attributes
 
-    def Field_Info(access_flags: Int,
+    def Field_Info(declaringClass: Class_Info,
+                   access_flags: Int,
                    name_index: Constant_Pool_Index,
                    descriptor_index: Constant_Pool_Index,
                    attributes: Attributes)(
-                       implicit constant_pool: Constant_Pool): Field_Info
+        implicit constant_pool: Constant_Pool): Field_Info
 
     //
     // IMPLEMENTATION
@@ -69,21 +75,22 @@ trait FieldsReader extends Constant_PoolAbstractions {
     private val NO_FIELDS = Vector.empty
 
     // We need the constant pool to look up the attributes' names and other information.
-    def Fields(in: DataInputStream, cp: Constant_Pool): Fields = {
+    def Fields(declaringClass: Class_Info, in: DataInputStream, cp: Constant_Pool): Fields = {
         val fields_count = in.readUnsignedShort
         if (fields_count == 0) return NO_FIELDS
 
-        repeat(fields_count) {
-            Field_Info(in, cp)
+        repeat (fields_count) {
+            Field_Info (declaringClass, in, cp)
         }
     }
 
-    private def Field_Info(in: DataInputStream, cp: Constant_Pool): Field_Info = {
-        Field_Info(
+    private def Field_Info(declaringClass: Class_Info, in: DataInputStream, cp: Constant_Pool): Field_Info = {
+        Field_Info (
+            declaringClass,
             in.readUnsignedShort,
             in.readUnsignedShort,
             in.readUnsignedShort,
-            Attributes(AttributesParent.Field, cp, in)
+            Attributes (AttributesParent.Field, cp, in)
         )(cp)
     }
 }

@@ -39,7 +39,7 @@ import de.tud.cs.st.bat.reader.MethodsReader
 import de.tud.cs.st.bat.reader.AttributesReader
 import de.tud.cs.st.bat.reader.SkipUnknown_attributeReader
 import de.tud.cs.st.bat.reader.CodeReader
-
+import java.io.DataInputStream
 
 
 /**
@@ -76,8 +76,6 @@ object Java6Framework
 		with CodeAttributeBinding
 			with CodeReader
 {
-
-
 }
 
 
