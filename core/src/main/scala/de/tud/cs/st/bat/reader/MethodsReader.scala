@@ -37,7 +37,7 @@ import java.io.DataInputStream
 import de.tud.cs.st.util.ControlAbstractions.repeat
 
 /**
- * Defines a template method to read in a class file's Method_info structure. 
+ * Defines a template method to read in a class file's Method_info structure.
  *
  * @author Michael Eichberg
  * @author Ralf Mitschke
@@ -59,14 +59,14 @@ trait MethodsReader extends Constant_PoolAbstractions
 
     type Method_Info
 
-    implicit def Method_InfoManifest: ClassManifest[Method_Info]
+    implicit val Method_InfoManifest: ClassManifest[Method_Info]
 
     def Method_Info(declaringClass: Class_Info,
                     accessFlags: Int,
                     name_index: Constant_Pool_Index,
                     descriptor_index: Constant_Pool_Index,
                     attributes: Attributes)(
-        implicit constant_pool: Constant_Pool): Method_Info
+            implicit constant_pool: Constant_Pool): Method_Info
 
     //
     // IMPLEMENTATION
@@ -74,26 +74,24 @@ trait MethodsReader extends Constant_PoolAbstractions
 
     type Methods = IndexedSeq[Method_Info]
 
-    private val NO_METHODS: Methods = Vector.empty
-
     def Methods(declaringClass: Class_Info, in: DataInputStream, cp: Constant_Pool): Methods = {
         val methods_count = in.readUnsignedShort
 
         if (methods_count == 0)
-            NO_METHODS
+            IndexedSeq.empty
         else
-            repeat (methods_count) {
-                Method_Info (declaringClass, in, cp)
+            repeat(methods_count) {
+                Method_Info(declaringClass, in, cp)
             }
     }
 
     private def Method_Info(declaringClass: Class_Info, in: DataInputStream, cp: Constant_Pool): Method_Info = {
-        Method_Info (
+        Method_Info(
             declaringClass,
             in.readUnsignedShort,
             in.readUnsignedShort,
             in.readUnsignedShort,
-            Attributes (AttributesParents.Method, cp, in)
+            Attributes(AttributesParents.Method, cp, in)
         )(cp)
     }
 }

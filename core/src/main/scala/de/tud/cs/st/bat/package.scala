@@ -33,22 +33,18 @@
 package de.tud.cs.st
 
 /**
- * BAT is a Java bytecode library written in Java.
- *
- * == This Package ==
- * Common constants and type definitions used across BAT.
- *
- * == General Design Rules ==
- * Unless explicitly noted, BAT does not make use of null values. I.e., all
- * methods do not take null values as parameters and will never return null
- * values.
- * NEW RULE: Every function that parses information (e.g., fields) can use structural information parsed higher up (e.g., class information)
- *
- *
- * @author Michael Eichberg
- */
-package object bat
-{
+  * BAT is a Java bytecode library written in Scala.
+  *
+  * == This Package ==
+  * Common constants and type definitions used across BAT.
+  *
+  * == General Design Rules ==
+  * Unless explicitly noted, BAT does not make use of null values. I.e., all methods do not take null values
+  * as parameters and will never return null values.
+  *
+  * @author Michael Eichberg
+  */
+package object bat {
 
     type AccessFlagsContext = AccessFlagsContexts.Value
 
@@ -58,5 +54,5 @@ package object bat
 
     type ConstantPoolTag = ConstantPoolTags.Value
 
-    val CLASS_FILE_MAGIC = 0xCAFEBABE
+    final val CLASS_FILE_MAGIC = 0xCAFEBABE
 }
