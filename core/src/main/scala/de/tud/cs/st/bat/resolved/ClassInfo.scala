@@ -39,7 +39,8 @@ case class ClassInfo(minorVersion: Int,
                      majorVersion: Int,
                      accessFlags: Int,
                      thisClass: ObjectType,
-                     superClass: Option[ObjectType])
+                     superClass: Option[ObjectType],
+                     interfaces: Seq[ObjectType])
 {
 
 }

@@ -35,6 +35,7 @@ package de.tud.cs.st.bat.reader
 import java.io.DataInputStream
 
 import de.tud.cs.st.util.ControlAbstractions.repeat
+import de.tud.cs.st.bat.resolved.ObjectType
 
 /**
  * Implements a template method to read in the interfaces implemented by a
@@ -49,12 +50,10 @@ trait InterfacesReader extends Constant_PoolAbstractions
     // ABSTRACT DEFINITIONS
     //
 
-    type Class_Info
-
     type Interface
     implicit val InterfaceManifest: ClassManifest[Interface]
 
-    def Interface(declaringClass: Class_Info, interface_index: Constant_Pool_Index)(implicit constant_pool: Constant_Pool): Interface
+    def Interface(declaringClass: ObjectType, interface_index: Constant_Pool_Index)(implicit constant_pool: Constant_Pool): Interface
 
     //
     // IMPLEMENTATION
@@ -64,7 +63,7 @@ trait InterfacesReader extends Constant_PoolAbstractions
 
     private val NO_INTERFACES: Interfaces = Vector.empty
 
-    def Interfaces(declaringClass: Class_Info, in: DataInputStream, cp: Constant_Pool): Interfaces = {
+    def Interfaces(declaringClass: ObjectType, in: DataInputStream, cp: Constant_Pool): Interfaces = {
         val interfaces_count = in.readUnsignedShort
         if (interfaces_count == 0) return NO_INTERFACES
 

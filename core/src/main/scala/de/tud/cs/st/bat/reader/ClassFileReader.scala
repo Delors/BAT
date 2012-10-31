@@ -35,6 +35,7 @@ package reader
 
 import java.io.{InputStream, DataInputStream, ByteArrayInputStream}
 import java.util.zip.{ZipFile, ZipEntry}
+import resolved.ObjectType
 
 /**
  * Abstract trait that implements a template method to read in a Java class file.
@@ -93,6 +94,7 @@ trait ClassFileReader extends Constant_PoolAbstractions
      */
     type Class_Info
 
+
     /**
      * The type of the object that represents a class's fields.
      */
@@ -149,7 +151,7 @@ trait ClassFileReader extends Constant_PoolAbstractions
      * template method that reads in a class file to delegate the reading of the
      * extended interfaces.
      */
-    protected def Interfaces(declaringClass: Class_Info, in: DataInputStream, cp: Constant_Pool): Interfaces
+    protected def Interfaces(declaringClass: ObjectType, in: DataInputStream, cp: Constant_Pool): Interfaces
 
 
     /**
@@ -196,7 +198,6 @@ trait ClassFileReader extends Constant_PoolAbstractions
      * as a whole.
      */
     protected def ClassFile(classInfo: Class_Info,
-                            interfaces: Interfaces,
                             fields: Fields,
                             methods: Methods,
                             attributes: Attributes)(
@@ -335,15 +336,14 @@ trait ClassFileReader extends Constant_PoolAbstractions
         val cp = Constant_Pool (in)
 
         val ci = Class_Info (minor_version, major_version, in)(cp)
-        val interfaces = Interfaces (ci, in, cp)
         val fields = Fields (ci, in, cp)
         val methods = Methods (ci, in, cp)
         val attributes = Attributes (AttributesParents.ClassFile, cp, in)
 
         ClassFile (
             ci,
-            interfaces,
-            fields, methods,
+            fields,
+            methods,
             attributes
         )(cp)
     }
