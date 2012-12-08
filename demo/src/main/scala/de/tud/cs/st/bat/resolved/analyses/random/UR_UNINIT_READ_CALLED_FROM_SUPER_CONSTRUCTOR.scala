@@ -12,7 +12,7 @@ import analyses.BaseAnalyses._
  *
  */
 object UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR
-    extends (Project => Iterable[(ObjectType, Method, String, FieldType, Int)])
+    extends (Project => Iterable[(ObjectType, String, MethodDescriptor, String, FieldType, Int)])
 {
 
 
@@ -33,7 +33,7 @@ object UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR
 
         ) yield
         {
-            (declaringClass, method, fieldName, fieldType, idx)
+            (declaringClass, method.name, method.descriptor, fieldName, fieldType, idx)
         }
 
     }
