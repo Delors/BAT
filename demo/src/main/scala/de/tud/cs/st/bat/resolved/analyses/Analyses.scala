@@ -32,6 +32,7 @@
  */
 package de.tud.cs.st.bat.resolved.analyses
 
+import metrics.DIP
 import selected._
 import random._
 
@@ -72,6 +73,9 @@ object Analyses
         case "UG_SYNC_SET_UNSYNC_GET" => UG_SYNC_SET_UNSYNC_GET
         case "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR" => UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR
 
+
+        /* metrics */
+        case "DIP" => DIP
         case _ => throw new IllegalArgumentException ("Unknown analysis: " + analysisName)
     }
 
