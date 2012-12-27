@@ -33,7 +33,7 @@
 package de.tud.cs.st.bat.resolved.analyses.metrics
 
 import de.tud.cs.st.bat.resolved.analyses.Project
-import de.tud.cs.st.bat.resolved.ClassFile
+import de.tud.cs.st.bat.resolved.{ObjectType, ClassFile}
 
 /**
  *
@@ -41,20 +41,24 @@ import de.tud.cs.st.bat.resolved.ClassFile
  *         Computes the depth of inheritance per class
  */
 object DIP
-    extends (Project => Iterable[(ClassFile, Int)])
+    extends (Project => Iterable[(ObjectType, Int)])
 {
 
     def apply(project: Project) =
         for (
-            classFile ← project.classFiles if classFile.superClass.isDefined
-        ) yield (classFile, inheritanceDepth (classFile)(project))
+            classFile ← project.classFiles
+        ) yield (classFile.thisClass, inheritanceDepth (classFile)(project))
 
 
     def inheritanceDepth(classFile: ClassFile)(implicit project: Project): Int = {
         if (!classFile.superClass.isDefined)
             return 0
-        val superClass = project.classes.getOrElse (classFile.superClass.get, return 0)
 
-        inheritanceDepth (superClass) + 1
+        val superType = classFile.superClass.get
+        if (!project.classes.isDefinedAt (superType))
+            return 0
+
+        val superClass = project.classes (superType)
+        1 + inheritanceDepth (superClass)
     }
 }

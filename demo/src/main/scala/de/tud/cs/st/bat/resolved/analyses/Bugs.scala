@@ -34,7 +34,7 @@ package de.tud.cs.st
 package bat.resolved
 package analyses
 
-import random.UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR
+import metrics._
 import reader.Java6Framework
 
 /**
@@ -50,7 +50,7 @@ object Bugs
     }
 
     val analyses: List[Project => Iterable[_]] = List (
-        UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR
+        LCOM
     )
 
     def main(args: Array[String]) {

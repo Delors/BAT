@@ -38,24 +38,24 @@ import collection.mutable
 import de.tud.cs.st.bat.resolved.ObjectType
 
 /**
- * Computes the afferent coupling;
- * the number of classes outside a package that depend on classes inside the package.
+ * Computes the efferent coupling;
+ * the number of classes inside a package that depend on classes outside the package.
  *
  * @author Ralf Mitschke
  */
-object CA
+object CE
     extends (Project => Iterable[(String, Int)])
 {
 
     def apply(project: Project) = {
         val dependencies = DependencyFactory (project)
-        val afferentCouplings = new mutable.HashMap[String, mutable.Set[ObjectType]] with mutable.MultiMap[String, ObjectType] //new HashMultiMap[String, ObjectType]
+        val efferentCouplings = new mutable.HashMap[String, mutable.Set[ObjectType]] with mutable.MultiMap[String, ObjectType] //new HashMultiMap[String, ObjectType]
 
         for (dependency <- dependencies if dependency.isCrossPackage) {
-            afferentCouplings.addBinding (dependency.target.packageName, dependency.source)
+            efferentCouplings.addBinding (dependency.source.packageName, dependency.source)
         }
 
-        afferentCouplings.map (e => (e._1, e._2.size))
+        efferentCouplings.map (e => (e._1, e._2.size))
     }
 
 

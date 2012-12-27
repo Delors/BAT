@@ -32,7 +32,7 @@
  */
 package de.tud.cs.st.bat.resolved.analyses
 
-import metrics.DIP
+import metrics._
 import selected._
 import random._
 
@@ -75,7 +75,10 @@ object Analyses
 
 
         /* metrics */
+        case "CA" => CA
+        case "CE" => CE
         case "DIP" => DIP
+        case "LCOM" => LCOM
         case _ => throw new IllegalArgumentException ("Unknown analysis: " + analysisName)
     }
 
