@@ -77,7 +77,7 @@ object Analyses
         /* metrics */
         case "CA" => CA
         case "CE" => CE
-        case "DIP" => DIP
+        case "DIT" => DIT
         case "LCOM" => LCOM
         case _ => throw new IllegalArgumentException ("Unknown analysis: " + analysisName)
     }

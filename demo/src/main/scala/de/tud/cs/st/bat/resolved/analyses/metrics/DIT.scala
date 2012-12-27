@@ -40,7 +40,7 @@ import de.tud.cs.st.bat.resolved.{ObjectType, ClassFile}
  * @author Ralf Mitschke
  *         Computes the depth of inheritance per class
  */
-object DIP
+object DIT
     extends (Project => Iterable[(ObjectType, Int)])
 {
 
