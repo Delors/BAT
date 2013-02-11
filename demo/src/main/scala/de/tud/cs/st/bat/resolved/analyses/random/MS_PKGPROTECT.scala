@@ -24,8 +24,8 @@ object MS_PKGPROTECT
 
     def apply(project: Project) = {
         // list of tuples in the form (packageName, FieldEntry)
-        val readFieldsFromPackage = BaseAnalyses.readFields (project.classFiles)
-            .map (entry => (entry._1._1.thisClass.packageName, entry._2))
+        //val readFieldsFromPackage = BaseAnalyses.readFields (project.classFiles) .map (entry => (entry._1._1.thisClass.packageName, entry._2))
+        val readFieldsFromPackage = BaseAnalyses.readFields_Packg_2 (project.classFiles)
         for (classFile ← project.classFiles if (!classFile.isInterfaceDeclaration);
              val declaringClass = classFile.thisClass;
              val packageName = declaringClass.packageName;

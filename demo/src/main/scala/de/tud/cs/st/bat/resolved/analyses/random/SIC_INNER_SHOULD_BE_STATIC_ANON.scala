@@ -72,7 +72,8 @@ object SIC_INNER_SHOULD_BE_STATIC_ANON
     }
 
     def apply(project: Project) = {
-        val readFields = BaseAnalyses.readFields (project.classFiles).map (_._2)
+        //val readFields = BaseAnalyses.readFields (project.classFiles).map (_._2)
+        val readFields = BaseAnalyses.readFields_2 (project.classFiles)
         for (classFile ← project.classFiles
              if (isAnonymousInnerClass (classFile) &&
                  canConvertToStaticInnerClass (classFile)

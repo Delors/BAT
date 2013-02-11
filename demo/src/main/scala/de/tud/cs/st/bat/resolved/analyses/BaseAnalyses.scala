@@ -1,7 +1,7 @@
 package de.tud.cs.st.bat.resolved.analyses
 
 import de.tud.cs.st.bat.resolved._
-import scala.Some
+import scala.collection._
 
 /**
  *
@@ -33,6 +33,36 @@ object BaseAnalyses
                 case GETSTATIC(declaringClass, name, fieldType) ⇒ ((classFile, method), (declaringClass, name, fieldType))
             }
         }).toSet
+    }
+
+    def readFields_2(classFiles: Traversable[ClassFile]): mutable.Set[(ObjectType, String, Type)] = {
+        val result : mutable.Set[(ObjectType, String, Type)] = mutable.Set.empty
+        for (classFile ← classFiles if !classFile.isInterfaceDeclaration;
+              method ← classFile.methods if method.body.isDefined;
+              instruction ← method.body.get.instructions
+        ) yield {
+            instruction match {
+                case GETFIELD(declaringClass, name, fieldType) ⇒ result.add (declaringClass, name, fieldType)
+                case GETSTATIC(declaringClass, name, fieldType) ⇒ result.add (declaringClass, name, fieldType)
+                case _ =>
+            }
+        }
+        result
+    }
+
+    def readFields_Packg_2(classFiles: Traversable[ClassFile]): mutable.Set[(String, (ObjectType, String, Type))] = {
+        val result : mutable.Set[(String, (ObjectType, String, Type))] = mutable.Set.empty
+        for (classFile ← classFiles if !classFile.isInterfaceDeclaration;
+             method ← classFile.methods if method.body.isDefined;
+             instruction ← method.body.get.instructions
+        ) yield {
+            instruction match {
+                case GETFIELD(declaringClass, name, fieldType) ⇒ result.add (classFile.thisClass.packageName, (declaringClass, name, fieldType))
+                case GETSTATIC(declaringClass, name, fieldType) ⇒ result.add (classFile.thisClass.packageName, (declaringClass, name, fieldType))
+                case _ =>
+            }
+        }
+        result
     }
 
     /**
