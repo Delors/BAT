@@ -40,9 +40,13 @@ object SIC_INNER_SHOULD_BE_STATIC_ANON
      * A heuristic for determining anonymous inner classes by the encoding in the name
      */
     def isAnonymousInnerClass(classFile: ClassFile): Boolean = {
+        if (!isInnerClass (classFile))
+            return false
         val lastSpecialChar = lastIndexOfInnerClassEncoding (classFile)
-        isInnerClass (classFile) &&
+        if (classFile.thisClass.className.size < lastSpecialChar)
             Character.isDigit (classFile.thisClass.className.charAt (lastSpecialChar + 1))
+        else
+            false
     }
 
 
