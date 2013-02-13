@@ -32,6 +32,7 @@ object DL_SYNCHRONIZATION
              (monitorEnter, idx) ← code.instructions.zipWithIndex.filter (_._1.isInstanceOf[MONITORENTER.type])
              stacks = df (idx).s.collection
              stack ← stacks
+             if (stack.size > 0)
              head = stack.get (0)
              if (BAD_SIGNATURES.exists (t => head.getDeclaredType.isOfType (t)) &&
                  !head.isCreatedByNew &&
