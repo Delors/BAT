@@ -293,13 +293,13 @@ object BytecodeTransformer
 
             case 0xa8 | 0xc9 => {
                 //JSR(_) | JSR_W(_) //168
-                System.err.println ("Instructions JSR and JSR_W are not supported.")
+                //System.err.println ("Instructions JSR and JSR_W are not supported.")
                 State (p.s.push (ObjectType.Object, pc), p.l)
             }
 
             case 0xa9 => {
                 //RET(_) //169
-                System.err.println ("Instruction RET is not supported.")
+                //System.err.println ("Instruction RET is not supported.")
                 p
             }
 
