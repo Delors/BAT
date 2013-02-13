@@ -53,7 +53,7 @@ object BaseControlFlow
      * @return The array of transformers of a method. The indexes of the array are the valid program
      *         counters of the program. The transformers on non-PC indexes is null.
      */
-    def computePredecessors(code: Code): IndexedSeq[List[Int]] = {
+    def apply(code: Code): IndexedSeq[List[Int]] = {
 
         val instructions = code.instructions
         val result = Array.ofDim[List[Int]](instructions.length)
