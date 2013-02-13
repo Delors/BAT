@@ -69,7 +69,7 @@ object BaseDataFlow
     }
 
 
-    private def apply(method: Method, cfg: IndexedSeq[List[Int]]): Array[State] = {
+    def apply(method: Method, cfg: IndexedSeq[List[Int]]): Array[State] = {
         val code = method.body.get
 
         //The start value of the analysis.

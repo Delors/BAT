@@ -35,7 +35,7 @@ object SA_FIELD_SELF_COMPARISON
 
         if (instr.isInstanceOf[INVOKEINTERFACE]) {
             val invoke = instr.asInstanceOf[INVOKEINTERFACE]
-            return invoke.name == "compareTo" && invoke.methodDescriptor.parameterTypes.size == 1 && invoke.methodDescriptor.returnType.isInstanceOf[IntegerType])
+            return invoke.name == "compareTo" && invoke.methodDescriptor.parameterTypes.size == 1 && invoke.methodDescriptor.returnType.isInstanceOf[IntegerType]
         }
 
         false
@@ -48,7 +48,8 @@ object SA_FIELD_SELF_COMPARISON
     def apply(project: Project) = {
         for {classFile ← project.classFiles
              method ← classFile.methods
-             code ← method.body
+             if method.body.isDefined
+             code = method.body.get
              if code.instructions.exists (makesComparison)
              cfg = BaseControlFlow (code)
              df = BaseDataFlow (method, cfg)

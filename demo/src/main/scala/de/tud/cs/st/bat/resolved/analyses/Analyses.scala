@@ -32,6 +32,7 @@
  */
 package de.tud.cs.st.bat.resolved.analyses
 
+import intraprocedural._
 import metrics._
 import selected._
 import random._
@@ -79,6 +80,17 @@ object Analyses
         case "CE" => CE
         case "DIT" => DIT
         case "LCOM" => LCOM
+
+        /* intra-procedural bugfinders */
+
+        case "DL_SYNCHRONIZATION" => DL_SYNCHRONIZATION
+        case "DMI_INVOKING_TOSTRING_ON_ARRAY" => DMI_INVOKING_TOSTRING_ON_ARRAY
+        case "RC_REF_COMPARISON" => RC_REF_COMPARISON
+        case "RV_RETURN_VALUE_IGNORED" => RV_RETURN_VALUE_IGNORED
+        case "SA_FIELD_SELF_COMPARISON" => SA_FIELD_SELF_COMPARISON
+        case "SA_LOCAL_SELF_ASSIGNMENT" => SA_LOCAL_SELF_ASSIGNMENT
+        case "SQL_BAD_PREPARED_STATEMENT_ACCESS" => SQL_BAD_PREPARED_STATEMENT_ACCESS
+
         case _ => throw new IllegalArgumentException ("Unknown analysis: " + analysisName)
     }
 

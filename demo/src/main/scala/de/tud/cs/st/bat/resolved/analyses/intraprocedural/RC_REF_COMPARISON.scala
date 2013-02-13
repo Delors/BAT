@@ -71,7 +71,8 @@ object RC_REF_COMPARISON
     def apply(project: Project) = {
         for {classFile ← project.classFiles
              method ← classFile.methods
-             code ← method.body
+             if method.body.isDefined
+             code = method.body.get
              if code.instructions.exists (makesComparison)
              cfg = BaseControlFlow (code)
              df = BaseDataFlow (method, cfg)

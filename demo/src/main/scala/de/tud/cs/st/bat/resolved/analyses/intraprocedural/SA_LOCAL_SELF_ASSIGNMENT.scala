@@ -18,7 +18,8 @@ object SA_LOCAL_SELF_ASSIGNMENT
     def apply(project: Project) = {
         for {classFile ← project.classFiles
              method ← classFile.methods
-             code ← method.body
+             if method.body.isDefined
+             code = method.body.get
              if code.instructions.exists (isStoreInstruction)
              cfg = BaseControlFlow (code)
              df = BaseDataFlow (method, cfg)

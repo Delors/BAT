@@ -39,7 +39,8 @@ object DMI_INVOKING_TOSTRING_ON_ARRAY
     def apply(project: Project) = {
         for {classFile ← project.classFiles
              method ← classFile.methods
-             code ← method.body
+             if method.body.isDefined
+             code = method.body.get
              if code.instructions.exists (invokesToString)
              cfg = BaseControlFlow (code)
              df = BaseDataFlow (method, cfg)

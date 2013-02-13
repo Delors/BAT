@@ -1,10 +1,8 @@
 package de.tud.cs.st.bat.resolved.analyses.intraprocedural
 
-import sandbox.stackAnalysis.datastructure.{LocVariables, Stack, State}
-import sandbox.findbugs.{BugType, BugLogger}
 import de.tud.cs.st.bat.resolved._
 import analyses.Project
-import sae.bytecode.structure.CodeInfo
+
 
 
 /**
@@ -21,7 +19,8 @@ object RV_RETURN_VALUE_IGNORED
     def apply(project: Project) = {
         for {classFile ← project.classFiles
              method ← classFile.methods
-             code ← method.body
+             if method.body.isDefined
+             code = method.body.get
              cfg = BaseControlFlow (code)
              df = BaseDataFlow (method, cfg)
              (invoke, idx) ← code.instructions.zipWithIndex.filter (e => isPopInstruction (e._1))
