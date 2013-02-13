@@ -11,93 +11,94 @@ import de.tud.cs.st.bat.resolved._
  * To change this template use File | Settings | File Templates.
  */
 //TODO: implement one function for push and pop
-case class Stack(maxSize: Int, values: List[Item]) {
+case class Stack(maxSize: Int, values: List[Item])
+{
 
-  def size: Int = {
-    values.size
-  }
-
-  def apply(index: Int): Item = {
-    values(index)
-  }
-
-  def get(index: Int): Item = {
-    var listIndex = 0
-    var currentIndex = 0
-
-    while (currentIndex < index) {
-      currentIndex = currentIndex + 1
-      listIndex = listIndex + values(listIndex).size
+    def size: Int = {
+        values.size
     }
 
-    return values(listIndex)
-  }
-
-  def getSlot(index: Int): Item = {
-    values(index)
-  }
-
-  def push(t: Item): Stack = {
-    if (t == null)
-      return this
-    if (size + t.size > maxSize)
-      return this
-
-    var res = values
-
-    for (i <- 1 until t.size) {
-      res = Item.createContinue(t) :: res
+    def apply(index: Int): Item = {
+        values (index)
     }
 
-    res = t :: res
-    return Stack(maxSize, res)
-  }
+    def get(index: Int): Item = {
+        var listIndex = 0
+        var currentIndex = 0
 
+        while (currentIndex < index) {
+            currentIndex = currentIndex + 1
+            listIndex = listIndex + values (listIndex).size
+        }
 
-  def push(t: Type, pc: Int): Stack = {
-    push(Item.createItem(ItemType.fromType(t), pc))
-  }
-
-  def pop(amount: Int): Stack = {
-    if (values.size < amount)
-      return this
-
-    var res = values
-    for (i <- 1 to amount) {
-      res = res.tail
+        values (listIndex)
     }
 
-    return Stack(maxSize, res)
-  }
+    def getSlot(index: Int): Item = {
+        values (index)
+    }
 
-  def pop(): Stack = {
-    if (values == Nil)
-      return this
+    def push(t: Item): Stack = {
+        if (t == null)
+            return this
+        if (size + t.size > maxSize)
+            return this
 
-    pop(values.head.size)
-  }
+        var res = values
+
+        for (i <- 1 until t.size) {
+            res = Item.createContinue (t) :: res
+        }
+
+        res = t :: res
+        Stack (maxSize, res)
+    }
 
 
-  def swap(): Stack = {
-    if (size < 2)
-      return this
+    def push(t: Type, pc: Int): Stack = {
+        push (Item.createItem (ItemType.fromType (t), pc))
+    }
 
-    return Stack(maxSize, values(1) :: values(0) :: values.drop(2))
+    def pop(amount: Int): Stack = {
+        if (values.size < amount)
+            return this
 
-  }
+        var res = values
+        for (i <- 1 to amount) {
+            res = res.tail
+        }
 
-  def dup(amount: Int, offset: Int): Stack = {
-    if (size + amount + offset > maxSize)
-      return this
+        Stack (maxSize, res)
+    }
 
-    val duplicate = values.take(amount)
+    def pop(): Stack = {
+        if (values == Nil)
+            return this
 
-    return Stack(maxSize, duplicate ++ values.slice(amount, amount + offset) ++ duplicate ++ values.drop(amount + offset))
-  }
+        pop (values.head.size)
+    }
 
-  override def toString(): String = {
-    return values.mkString("[", "/", "]")
-  }
+
+    def swap(): Stack = {
+        if (size < 2)
+            return this
+
+        Stack (maxSize, values (1) :: values (0) :: values.drop (2))
+
+    }
+
+    def dup(amount: Int, offset: Int): Stack = {
+        if (size + amount + offset > maxSize)
+            return this
+
+        val duplicate = values.take (amount)
+
+        Stack (maxSize, duplicate ++ values.slice (amount, amount + offset) ++ duplicate ++ values.drop (amount + offset))
+    }
+
+    override def toString: String = {
+        values.mkString ("[", "/", "]")
+    }
 
 
 }

@@ -98,7 +98,7 @@ object BaseDataFlow
                 //Initializes the results array.
 
                 //If the instruction has no predecessors, the newResult will be the start value (sv)
-                if (preds.length != 0) {
+                if (preds.length > 0) {
 
                     //Result = transform the results at the entry labels with their transformer then combine them for a new newResult.
                     result = transform (preds.head, code.instructions, fromArray (results, preds.head, ev))
@@ -108,7 +108,15 @@ object BaseDataFlow
                 }
 
                 //Check if the newResult has changed. If no newResult was changed during one iteration, the fixed point has been found.
-                if (result != (results (pc))) {
+                val old = results (pc)
+                if (result != old) {
+                    /*
+                    if (old != null) {
+                        val s = old.s == result.s
+                        val l = old.l == result.l
+                        println("changed")
+                    }
+                    */
                     resultsChanged = true
                 }
 

@@ -15,12 +15,12 @@ case class State(s: Stacks, l: LocVariables)
 {
 
     def combineWith(other: State): State = {
-        new State (s.combineWith (other.s), l.combineWith (other.l))
+        State (s.combineWith (other.s), l.combineWith (other.l))
     }
 
 }
 
-case object State
+object State
 {
     def createEmptyState(maxStack: Int, maxLoc: Int): State =
         State (Stacks (maxStack, Nil), LocVariables (Array.ofDim[Item](maxLoc)))
