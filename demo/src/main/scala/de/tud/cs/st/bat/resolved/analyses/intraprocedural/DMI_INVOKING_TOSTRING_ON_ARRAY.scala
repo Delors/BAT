@@ -4,7 +4,7 @@ import de.tud.cs.st.bat.resolved._
 import analyses.Project
 
 /**
- * @ author Ralf Mitschke
+ * @author Ralf Mitschke
  */
 object DMI_INVOKING_TOSTRING_ON_ARRAY
     extends (Project => Iterable[(ClassFile, Method, Int)])

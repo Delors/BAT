@@ -5,7 +5,7 @@ import analyses.Project
 import structure._
 
 /**
- * @ author Ralf Mitschke
+ * @author Ralf Mitschke
  */
 object RC_REF_COMPARISON
     extends (Project => Iterable[(ClassFile, Method, Int)])

@@ -8,7 +8,7 @@ import sae.bytecode.structure.CodeInfo
 
 
 /**
- * @ author Ralf Mitschke
+ * @author Ralf Mitschke
  */
 object RV_RETURN_VALUE_IGNORED
     extends (Project => Iterable[(ClassFile, Method, Int)])

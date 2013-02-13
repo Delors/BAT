@@ -4,7 +4,7 @@ import de.tud.cs.st.bat.resolved._
 import analyses.Project
 
 /**
- * @ author Ralf Mitschke
+ * @author Ralf Mitschke
  */
 object DL_SYNCHRONIZATION
     extends (Project => Iterable[(ClassFile, Method, Int)])
