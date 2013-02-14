@@ -34,15 +34,15 @@
 package de.tud.cs.st.bat.resolved
 
 /**
-  * Invoke interface method.
-  *
-  * @author Michael Eichberg
-  */
-case class INVOKEINTERFACE(
-    val declaringClass: ReferenceType, // an interface or class type to be precise
-    val name: String, // an interface or class type to be precise
-    val methodDescriptor: MethodDescriptor)
-        extends MethodInvocationInstruction {
+ * Invoke interface method.
+ *
+ * @author Michael Eichberg
+ */
+case class INVOKEINTERFACE(declaringClass: ReferenceType, // an interface or class type to be precise
+                           name: String, // an interface or class type to be precise
+                           methodDescriptor: MethodDescriptor)
+    extends MethodInvocationInstruction
+{
 
     def opcode: Int = 185
 

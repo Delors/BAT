@@ -32,6 +32,7 @@
  */
 package de.tud.cs.st.bat.resolved.analyses
 
+import interprocedural._
 import intraprocedural._
 import metrics._
 import selected._
@@ -90,6 +91,9 @@ object Analyses
         case "SA_FIELD_SELF_COMPARISON" => SA_FIELD_SELF_COMPARISON
         case "SA_LOCAL_SELF_ASSIGNMENT" => SA_LOCAL_SELF_ASSIGNMENT
         case "SQL_BAD_PREPARED_STATEMENT_ACCESS" => SQL_BAD_PREPARED_STATEMENT_ACCESS
+
+        /* inter-procedural */
+        case "CHA" => CHA
 
         case _ => throw new IllegalArgumentException ("Unknown analysis: " + analysisName)
     }

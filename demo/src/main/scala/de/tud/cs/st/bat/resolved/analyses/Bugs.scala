@@ -34,6 +34,7 @@ package de.tud.cs.st
 package bat.resolved
 package analyses
 
+import intraprocedural.RV_RETURN_VALUE_IGNORED
 import metrics._
 import reader.Java6Framework
 
@@ -50,7 +51,7 @@ object Bugs
     }
 
     val analyses: List[Project => Iterable[_]] = List (
-        LCOM
+        RV_RETURN_VALUE_IGNORED
     )
 
     def main(args: Array[String]) {
@@ -86,7 +87,7 @@ object Bugs
         for (analysis ← analyses) {
             print (analysis.getClass.getSimpleName + " : \n")
             val result = analysis (project)
-            println (result.mkString ("\n"))
+            //println (result.mkString ("\n"))
             println (result.size)
         }
 

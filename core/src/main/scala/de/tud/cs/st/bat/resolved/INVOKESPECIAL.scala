@@ -34,16 +34,16 @@
 package de.tud.cs.st.bat.resolved
 
 /**
-  * Invoke instance method; special handling for superclass, private,
-  * and instance initialization method invocations.
-  *
-  * @author Michael Eichberg
-  */
-case class INVOKESPECIAL(
-    val declaringClass: ReferenceType, // an interface or class type to be precise
-    val name: String, // an interface or class type to be precise
-    val methodDescriptor: MethodDescriptor)
-        extends MethodInvocationInstruction {
+ * Invoke instance method; special handling for superclass, private,
+ * and instance initialization method invocations.
+ *
+ * @author Michael Eichberg
+ */
+case class INVOKESPECIAL(declaringClass: ReferenceType, // an interface or class type to be precise
+                         name: String, // an interface or class type to be precise
+                         methodDescriptor: MethodDescriptor)
+    extends MethodInvocationInstruction
+{
 
     def opcode: Int = 183
 

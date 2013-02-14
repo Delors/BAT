@@ -34,15 +34,15 @@
 package de.tud.cs.st.bat.resolved
 
 /**
-  * Invoke instance method; dispatch based on class.
-  *
-  * @author Michael Eichberg
-  */
-case class INVOKEVIRTUAL(
-    val declaringClass: ReferenceType, // an interface or class type to be precise
-    val name: String, // an interface or class type to be precise
-    val methodDescriptor: MethodDescriptor)
-        extends MethodInvocationInstruction {
+ * Invoke instance method; dispatch based on class.
+ *
+ * @author Michael Eichberg
+ */
+case class INVOKEVIRTUAL(declaringClass: ReferenceType, // an interface or class type to be precise
+                         name: String, // an interface or class type to be precise
+                         methodDescriptor: MethodDescriptor)
+    extends MethodInvocationInstruction
+{
 
     def opcode: Int = 182
 

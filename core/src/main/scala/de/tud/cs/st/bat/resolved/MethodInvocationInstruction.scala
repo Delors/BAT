@@ -34,16 +34,25 @@
 package de.tud.cs.st.bat.resolved
 
 /**
-  * An instruction that invokes another method.
-  *
-  * @author Michael Eichberg
-  */
-abstract class MethodInvocationInstruction extends Instruction {
+ * An instruction that invokes another method.
+ *
+ * @author Michael Eichberg
+ * @author Ralf Mitschke
+ */
+abstract class MethodInvocationInstruction extends Instruction
+{
+    def declaringClass: ReferenceType
 
+    // an interface or class type to be precise
+    def name: String
+
+    // an interface or class type to be precise
+    def methodDescriptor: MethodDescriptor
 }
 
-object MethodInvocationInstruction {
+object MethodInvocationInstruction
+{
 
-    val runtimeExceptions = List(ObjectType.NullPointerException)
+    val runtimeExceptions = List (ObjectType.NullPointerException)
 
 }
