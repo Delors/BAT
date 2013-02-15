@@ -55,35 +55,59 @@ object CHA
         }
         {
             // TODO check what CHA really computes
-            addMethodsRecursively (project, classFile, method, cg)
+            addMethodsRecursively (project, classFile, method)(cg)
         }
 
         cg.result ()
     }
 
 
-    def addMethodsRecursively(project: Project, classFile: ClassFile, method: Method, cg: mutable.HashMap[MethodReference, mutable.HashSet[MethodReference]]) {
+    def addMethodsRecursively(project: Project,
+                              classFile: ClassFile,
+                              method: Method)
+                             (implicit cg: mutable.HashMap[MethodReference, mutable.HashSet[MethodReference]])
+    {
 
         val sourceMethodRef = new MethodReference (classFile, method)
-        if (cg.contains (sourceMethodRef) || !method.body.isDefined) {
-            return
+        // this method has no body and will never reach any other methods
+        if (!method.body.isDefined)
+        {
+            return //mutable.HashSet.empty
+        }
+        // the called methods of this method were already computed
+        if (cg.contains (sourceMethodRef))
+        {
+            return //cg (sourceMethodRef)
         }
 
-        // TODO this is not correct yet. add all methods that are reachable from sourceMethodRef
+        val calledMethods = cg.getOrElseUpdate (sourceMethodRef, mutable.HashSet.empty)
+
         for (instruction ← method.body.get.instructions.filter (_.isInstanceOf[MethodInvocationInstruction]))
         {
             val invoke = instruction.asInstanceOf[MethodInvocationInstruction]
             val targetMethodRef = new MethodReference (invoke)
-            cg (sourceMethodRef).add (targetMethodRef)
-            if (invoke.declaringClass.isObjectType) {
+            // add the call to the set of called methods
+            calledMethods.add (targetMethodRef)
+
+            if (cg.contains (targetMethodRef))
+            {
+                cg (targetMethodRef).foreach (m => calledMethods.add (m))
+                return
+            }
+            else if (invoke.declaringClass.isObjectType && project.classes.contains(invoke.declaringClass.asInstanceOf[ObjectType])) {
+                // we want to analyze the further called methods of the target
                 val targetClass = project.classes (invoke.declaringClass.asInstanceOf[ObjectType])
+                // TODO iterating over all methods is inefficient.
                 val targetMethod = targetClass.methods.find (method =>
                     method.name == invoke.name && method.descriptor == invoke.methodDescriptor
                 )
                 if (targetMethod.isDefined) {
-                    addMethodsRecursively (project, targetClass, targetMethod.get, cg)
+                    addMethodsRecursively (project, targetClass, targetMethod.get)
+                    cg.getOrElse (targetMethodRef, mutable.HashSet.empty).foreach (m => calledMethods.add (m))
                 }
             }
+
+
         }
     }
 }

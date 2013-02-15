@@ -53,4 +53,6 @@ case class INVOKEDYNAMIC(
 
     def runtimeExceptions: List[ObjectType] = Nil /* never throws a "NullPointerException"... */
 
+    // TODO this is not correct
+    def declaringClass = null
 }
