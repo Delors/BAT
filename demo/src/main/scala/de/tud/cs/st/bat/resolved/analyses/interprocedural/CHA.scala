@@ -33,8 +33,7 @@
 package de.tud.cs.st.bat.resolved.analyses.interprocedural
 
 import de.tud.cs.st.bat.resolved.analyses.Project
-import de.tud.cs.st.bat.resolved.{ObjectType, ClassFile, Method, MethodInvocationInstruction}
-import collection.mutable
+import de.tud.cs.st.bat.resolved._
 
 /**
  *
@@ -43,71 +42,63 @@ import collection.mutable
  */
 
 object CHA
-    extends (Project => Iterable[(MethodReference, Iterable[MethodReference])])
+    extends (Project => Iterable[(MethodReference, MethodReference)])
 {
 
     def apply(project: Project) = {
-        val cg: mutable.HashMap[MethodReference, mutable.HashSet[MethodReference]] =
-            mutable.HashMap.empty
-
         for {classFile ← project.classFiles
              method ← classFile.methods
-        }
-        {
-            // TODO check what CHA really computes
-            addMethodsRecursively (project, classFile, method)(cg)
-        }
-
-        cg.result ()
+             if method.body.isDefined
+             source = new MethodReference (classFile, method)
+             instruction ← method.body.get.instructions.filter (_.isInstanceOf[MethodInvocationInstruction])
+             targets = getCallTargets (instruction.asInstanceOf[MethodInvocationInstruction])(project).view
+             target ← targets
+        } yield (source, target)
     }
 
 
-    def addMethodsRecursively(project: Project,
-                              classFile: ClassFile,
-                              method: Method)
-                             (implicit cg: mutable.HashMap[MethodReference, mutable.HashSet[MethodReference]])
+    private def getCallTargets(instruction: MethodInvocationInstruction)(implicit project: Project): Set[MethodReference] =
     {
-
-        val sourceMethodRef = new MethodReference (classFile, method)
-        // this method has no body and will never reach any other methods
-        if (!method.body.isDefined)
-        {
-            return //mutable.HashSet.empty
-        }
-        // the called methods of this method were already computed
-        if (cg.contains (sourceMethodRef))
-        {
-            return //cg (sourceMethodRef)
-        }
-
-        val calledMethods = cg.getOrElseUpdate (sourceMethodRef, mutable.HashSet.empty)
-
-        for (instruction ← method.body.get.instructions.filter (_.isInstanceOf[MethodInvocationInstruction]))
-        {
-            val invoke = instruction.asInstanceOf[MethodInvocationInstruction]
-            val targetMethodRef = new MethodReference (invoke)
-            // add the call to the set of called methods
-            calledMethods.add (targetMethodRef)
-
-            if (cg.contains (targetMethodRef))
-            {
-                cg (targetMethodRef).foreach (m => calledMethods.add (m))
-                return
-            }
-            else if (invoke.declaringClass.isObjectType && project.classes.contains(invoke.declaringClass.asInstanceOf[ObjectType])) {
-                // we want to analyze the further called methods of the target
-                val targetClass = project.classes (invoke.declaringClass.asInstanceOf[ObjectType])
-                // TODO iterating over all methods is inefficient.
-                val targetMethod = targetClass.methods.find (method =>
-                    method.name == invoke.name && method.descriptor == invoke.methodDescriptor
-                )
-                if (targetMethod.isDefined) {
-                    addMethodsRecursively (project, targetClass, targetMethod.get)
-                    cg.getOrElse (targetMethodRef, mutable.HashSet.empty).foreach (m => calledMethods.add (m))
-                }
-            }
-
-
+        instruction match {
+            case INVOKESPECIAL (declaringClass, name, methodDescriptor) =>
+                Set (MethodReference (declaringClass, name, methodDescriptor))
+            case INVOKESTATIC (declaringClass, name, methodDescriptor) =>
+                Set (MethodReference (declaringClass, name, methodDescriptor))
+            case INVOKEINTERFACE (declaringClass, name, methodDescriptor) =>
+                getSubClassMethods (declaringClass, name, methodDescriptor)
+            case INVOKEVIRTUAL (declaringClass, name, methodDescriptor) =>
+                getSubClassMethods (declaringClass, name, methodDescriptor)
+            case _ => throw new IllegalStateException (instruction + " is not a valid call instruction")
         }
     }
+
+    private def getSubClassMethods(declaringType: ReferenceType,
+                                   name: String,
+                                   methodDescriptor: MethodDescriptor)(implicit project: Project): Set[MethodReference] =
+    {
+        if (!declaringType.isObjectType)
+            return Set (MethodReference (declaringType, name, methodDescriptor))
+
+        val declaringClass = declaringType.asInstanceOf[ObjectType]
+        val subtypes = project.classHierarchy.subtypes (declaringClass)
+        if (!subtypes.isDefined)
+            return Set (MethodReference (declaringType, name, methodDescriptor))
+
+        val subtypeMethods =
+            for {subType <- subtypes.get
+                 method = findMethod (subType, name, methodDescriptor)
+                 if (method.isDefined)
+            } yield new MethodReference (subType, method.get)
+
+        subtypeMethods + MethodReference (declaringType, name, methodDescriptor)
+    }
+
+    private def findMethod(declaringClass: ObjectType, name: String, methodDescriptor: MethodDescriptor)(implicit project: Project): Option[Method] = {
+        val targetClass = project.classes (declaringClass)
+        // TODO iterating over all methods is inefficient.
+        targetClass.methods.find (method =>
+            method.name == name && method.descriptor == methodDescriptor
+        )
+    }
+
 }

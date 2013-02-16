@@ -48,6 +48,9 @@ case class MethodReference (declaringClass: ReferenceType,
     def this(classfile: ClassFile, method: Method) =
         this (classfile.thisClass, method.name, method.descriptor)
 
+    def this(declaringClass: ObjectType, method: Method) =
+        this (declaringClass, method.name, method.descriptor)
+
     def this(target: MethodInvocationInstruction) =
         this (target.declaringClass, target.name, target.methodDescriptor)
 }
