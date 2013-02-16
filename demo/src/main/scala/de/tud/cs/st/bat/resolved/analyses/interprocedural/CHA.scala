@@ -48,12 +48,16 @@ object CHA
 {
 
     def apply(project: Project) = {
+        implicit val index: mutable.Map[MethodReference, Set[MethodReference]] =
+            mutable.HashMap.empty
+        //buildSubtypeMethodIndex (project)
+
         for {classFile ← project.classFiles
              method ← classFile.methods
              if method.body.isDefined
              source = new MethodReference (classFile, method)
              instruction ← method.body.get.instructions.filter (_.isInstanceOf[MethodInvocationInstruction])
-             targets = getCallTargets (instruction.asInstanceOf[MethodInvocationInstruction])(project).view
+             targets = getCallTargetsByIndex (instruction.asInstanceOf[MethodInvocationInstruction])(project, index)
              target ← targets
         } yield (source, target)
     }
@@ -94,6 +98,74 @@ object CHA
 
         subtypeMethods + MethodReference (declaringType, name, methodDescriptor)
     }
+
+
+    private def getCallTargetsByIndex(instruction: MethodInvocationInstruction)(implicit project: Project, index: mutable.Map[MethodReference, Set[MethodReference]]): Set[MethodReference] =
+    {
+        instruction match {
+            case INVOKESPECIAL (declaringClass, name, methodDescriptor) =>
+                Set (MethodReference (declaringClass, name, methodDescriptor))
+            case INVOKESTATIC (declaringClass, name, methodDescriptor) =>
+                Set (MethodReference (declaringClass, name, methodDescriptor))
+            case INVOKEINTERFACE (declaringClass, name, methodDescriptor) =>
+                getSubClassMethodsByIndex (declaringClass, name, methodDescriptor)
+            case INVOKEVIRTUAL (declaringClass, name, methodDescriptor) =>
+                getSubClassMethodsByIndex (declaringClass, name, methodDescriptor)
+            case _ => throw new IllegalStateException (instruction + " is not a valid call instruction")
+        }
+    }
+
+    private def getSubClassMethodsByIndex(declaringType: ReferenceType,
+                                          name: String,
+                                          methodDescriptor: MethodDescriptor)(implicit project: Project, index: mutable.Map[MethodReference, Set[MethodReference]]): Set[MethodReference] =
+    {
+
+        val key = MethodReference (declaringType, name, methodDescriptor)
+
+        if (index.isDefinedAt (key))
+            return index (key)
+
+        if (!declaringType.isObjectType)
+            return index.getOrElseUpdate (key, Set (key))
+
+        val declaringClass = declaringType.asInstanceOf[ObjectType]
+        val subtypes = project.classHierarchy.subtypes (declaringClass)
+        if (!subtypes.isDefined)
+            return index.getOrElseUpdate (key, Set (key))
+
+
+
+        val subtypeMethods =
+            for {subType <- subtypes.get
+                 method = findMethod (subType, name, methodDescriptor)
+                 if (method.isDefined)
+            } yield new MethodReference (subType, method.get)
+
+        index.getOrElseUpdate (key, subtypeMethods + key)
+    }
+
+    /*
+    private def buildSubtypeMethodIndex(implicit project: Project): mutable.Map[MethodReference, Set[MethodReference]] =
+    {
+        val result: mutable.Map[MethodReference, Set[MethodReference]] = mutable.HashMap.empty
+
+        for {classFile ← project.classFiles
+             subtypes = project.classHierarchy.subtypes (classFile.thisClass).getOrElse (Set.empty)
+             subType ← subtypes
+             method ← classFile.methods
+             subMethod = findMethod (subType, method.name, method.descriptor)
+             if subMethod.isDefined
+             key = new MethodReference (classFile, method)
+             value = new MethodReference (subType, subMethod.get)
+        }
+        {
+            val subMethods = result.getOrElseUpdate (key, Set.empty)
+            result.put (key, subMethods + value)
+        }
+
+        result
+    }
+               */
 
     private def findMethod(declaringClass: ObjectType, name: String, methodDescriptor: MethodDescriptor)(implicit project: Project): Option[Method] = {
         methodCache.getOrElseUpdate (
