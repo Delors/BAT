@@ -94,6 +94,7 @@ object Analyses
 
         /* inter-procedural */
         case "CHA" => CHA
+        case "RTA" => RTA
 
         case _ => throw new IllegalArgumentException ("Unknown analysis: " + analysisName)
     }

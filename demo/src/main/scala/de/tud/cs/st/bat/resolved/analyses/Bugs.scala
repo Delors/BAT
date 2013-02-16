@@ -34,8 +34,7 @@ package de.tud.cs.st
 package bat.resolved
 package analyses
 
-import intraprocedural.RV_RETURN_VALUE_IGNORED
-import metrics._
+import interprocedural._
 import reader.Java6Framework
 
 /**
@@ -51,7 +50,7 @@ object Bugs
     }
 
     val analyses: List[Project => Iterable[_]] = List (
-        RV_RETURN_VALUE_IGNORED
+        CHA
     )
 
     def main(args: Array[String]) {
