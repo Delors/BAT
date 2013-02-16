@@ -35,6 +35,8 @@ package de.tud.cs.st.bat.resolved.analyses.interprocedural
 import de.tud.cs.st.bat.resolved.analyses.Project
 import de.tud.cs.st.bat.resolved._
 
+import collection.mutable
+
 /**
  *
  * @author Ralf Mitschke
@@ -94,11 +96,17 @@ object CHA
     }
 
     private def findMethod(declaringClass: ObjectType, name: String, methodDescriptor: MethodDescriptor)(implicit project: Project): Option[Method] = {
-        val targetClass = project.classes (declaringClass)
-        // TODO iterating over all methods is inefficient.
-        targetClass.methods.find (method =>
-            method.name == name && method.descriptor == methodDescriptor
+        methodCache.getOrElseUpdate (
+        (declaringClass, name, methodDescriptor),
+        {
+            val targetClass = project.classes (declaringClass)
+            targetClass.methods.find (method =>
+                method.name == name && method.descriptor == methodDescriptor
+            )
+        }
         )
     }
+
+    private val methodCache: mutable.Map[(ObjectType, String, MethodDescriptor), Option[Method]] = mutable.HashMap.empty
 
 }
