@@ -73,7 +73,7 @@ object RC_REF_COMPARISON
              method ← classFile.methods
              if method.body.isDefined
              code = method.body.get
-             if code.instructions.exists (makesComparison)
+             //if code.instructions.exists (makesComparison)
              cfg = BaseControlFlow (code)
              df = BaseDataFlow (method, cfg)
              (invoke, idx) ← code.instructions.zipWithIndex.filter (e => makesComparison (e._1))

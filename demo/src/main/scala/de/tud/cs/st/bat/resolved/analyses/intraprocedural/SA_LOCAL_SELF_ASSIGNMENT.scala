@@ -20,7 +20,7 @@ object SA_LOCAL_SELF_ASSIGNMENT
              method ← classFile.methods
              if method.body.isDefined
              code = method.body.get
-             if code.instructions.exists (isStoreInstruction)
+             //if code.instructions.exists (isStoreInstruction)
              cfg = BaseControlFlow (code)
              df = BaseDataFlow (method, cfg)
              (store, idx) ← code.instructions.zipWithIndex.filter (e => isStoreInstruction (e._1))

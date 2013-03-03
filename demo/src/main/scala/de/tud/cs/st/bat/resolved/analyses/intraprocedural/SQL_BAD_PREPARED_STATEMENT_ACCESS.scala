@@ -33,7 +33,7 @@ object SQL_BAD_PREPARED_STATEMENT_ACCESS
              method ← classFile.methods
              if method.body.isDefined
              code = method.body.get
-             if code.instructions.exists (callsPreparedStatementSet)
+             //if code.instructions.exists (callsPreparedStatementSet)
              cfg = BaseControlFlow (code)
              df = BaseDataFlow (method, cfg)
              (call, idx) ← code.instructions.zipWithIndex.filter (e => callsPreparedStatementSet (e._1))

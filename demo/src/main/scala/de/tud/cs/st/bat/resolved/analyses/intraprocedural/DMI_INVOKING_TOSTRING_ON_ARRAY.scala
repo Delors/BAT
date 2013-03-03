@@ -41,7 +41,7 @@ object DMI_INVOKING_TOSTRING_ON_ARRAY
              method ← classFile.methods
              if method.body.isDefined
              code = method.body.get
-             if code.instructions.exists (invokesToString)
+             //if code.instructions.exists (invokesToString)
              cfg = BaseControlFlow (code)
              df = BaseDataFlow (method, cfg)
              (invoke, idx) ← code.instructions.zipWithIndex.filter (e => invokesToString (e._1))

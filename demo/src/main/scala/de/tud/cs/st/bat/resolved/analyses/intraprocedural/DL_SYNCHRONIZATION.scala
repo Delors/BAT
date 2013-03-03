@@ -26,7 +26,7 @@ object DL_SYNCHRONIZATION
              method ← classFile.methods
              if method.body.isDefined
              code = method.body.get
-             if code.instructions.exists (_.isInstanceOf[MONITORENTER.type])
+             //if code.instructions.exists (_.isInstanceOf[MONITORENTER.type])
              cfg = BaseControlFlow (code)
              df = BaseDataFlow (method, cfg)
              (monitorEnter, idx) ← code.instructions.zipWithIndex.filter (_._1.isInstanceOf[MONITORENTER.type])

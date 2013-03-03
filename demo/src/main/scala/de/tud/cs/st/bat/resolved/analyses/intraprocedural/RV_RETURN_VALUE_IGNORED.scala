@@ -9,7 +9,7 @@ import analyses.Project
  * @author Ralf Mitschke
  */
 object RV_RETURN_VALUE_IGNORED
-    extends (Project => Iterable[(ClassFile, Method, Int)])
+    extends (Project => Iterable[(ObjectType, String, MethodDescriptor, Int)])
 {
 
     private def isPopInstruction(instruction: Instruction): Boolean =
@@ -29,7 +29,7 @@ object RV_RETURN_VALUE_IGNORED
              if stack.size > 0 && (stack.get (0).isReturnValue || stack.get (0).isCreatedByNew)
         } yield
         {
-            (classFile, method, idx)
+            (classFile.thisClass, method.name, method.descriptor, idx)
         }
     }
 
