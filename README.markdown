@@ -1,3 +1,7 @@
+# Moved the Repository
+I moved the repository; this one is kept for historical reasons. If you are interested in following BAT, just contact me.
+
+
 # Overview
 BAT is library in Scala for analyzing Java Bytecode.
 
