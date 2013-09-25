@@ -63,7 +63,7 @@ object MyFirstAnalysis
                     val instruction = method.body.get.instructions (i)
                     println (instruction)
 
-                    if (instruction != null) {
+                    if (instruction != null && !states (i).isDummy()) {
 
                         var result: (Option[SSAInstruction], List[SSAInstruction], mutable.Seq[SSAVariable],
                             Option[List[Int]]) = null
@@ -125,7 +125,9 @@ object MyFirstAnalysis
 
             }
             */
-            res.reverse.foldLeft ("")(_ + "\n" + _)
+            val r = res.reverse.foldLeft ("")(_ + "\n" + _)
+            println(r)
+            r
         }
         //getMnemonics(project)
     }
@@ -222,6 +224,7 @@ object MyFirstAnalysis
                 val newX = new SSAVariable (VariableMaker.newVar ())
                 val newValue = new SSAAdd (newX, x, SSAConstant (constValue))
                 Memory.change (newX, newValue)
+                locals(lvindex) = newX
 
                 (Some (newValue), stack, locals, None)
             }
@@ -235,7 +238,7 @@ object MyFirstAnalysis
                 val list = List.empty[Int].:+ (index + offset).:+ (index + 3)
                 (None, stack.tail.tail, locals, Some (list))
             }
-            case 176 /*GOTO*/ => {
+            case 167 /*GOTO*/ => {
                 val offset = instr.asInstanceOf[GOTO].branchoffset
                 val list = List.empty[Int].:+ (index + offset)
                 (None, stack, locals, Some (list))
