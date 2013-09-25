@@ -88,7 +88,7 @@ object Bugs
             print (analysis.getClass.getSimpleName + " : \n")
             val result = analysis (project)
             println (result.mkString ("\n"))
-            println (result.size)
+            //println (result.size)
         }
 
 

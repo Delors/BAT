@@ -1,5 +1,7 @@
 package de.tud.cs.st.bat.sandbox
 
+import scala.collection.mutable
+
 /**
  * Created with IntelliJ IDEA.
  * User: Ich
@@ -7,7 +9,7 @@ package de.tud.cs.st.bat.sandbox
  * Time: 12:22
  * To change this template use File | Settings | File Templates.
  */
-class State(val localsState : Array[SSAVariable], val stackState : List[SSAInstruction], val ssaCommand : Option[SSAInstruction]) {
+case class State(val localsState : mutable.Seq[SSAVariable], val stackState : List[SSAInstruction], val ssaCommand : Option[SSAInstruction]) {
 
   var _isDummy = false
 
@@ -19,7 +21,7 @@ class State(val localsState : Array[SSAVariable], val stackState : List[SSAInstr
 
   def merge(state : State) : (State, Boolean) ={
     //var result : State
-    var mergedLocalsState : Array[SSAVariable] = Array.empty[SSAVariable]
+    var mergedLocalsState : mutable.Seq[SSAVariable] = Array.empty[SSAVariable]
     var mergedStackState  : List[SSAInstruction] = List.empty[SSAInstruction]
     var mergedSSACommand : Option[SSAInstruction] = None
     var includeSucceeded : Boolean = true
@@ -160,7 +162,7 @@ class State(val localsState : Array[SSAVariable], val stackState : List[SSAInstr
     return true
   }
 
-  def areLocalsEqual(locals1 : Array[SSAVariable], locals2 : Array[SSAVariable]) : Boolean ={
+  def areLocalsEqual(locals1 : mutable.Seq[SSAVariable], locals2 : mutable.Seq[SSAVariable]) : Boolean ={
 
     if(locals1.size != locals2.size){
       return false

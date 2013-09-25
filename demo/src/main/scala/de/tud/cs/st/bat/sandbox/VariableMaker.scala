@@ -18,4 +18,9 @@ object VariableMaker {
     i +=1
     return s.toString()
   }
+
+
+    def reset {
+        i = 0
+    }
 }
