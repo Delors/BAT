@@ -36,6 +36,7 @@ package analyses
 
 import random.UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR
 import reader.Java6Framework
+import de.tud.cs.st.bat.sandbox.MyFirstAnalysis
 
 /**
  * @author Michael Eichberg
@@ -50,7 +51,7 @@ object Bugs
     }
 
     val analyses: List[Project => Iterable[_]] = List (
-        UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR
+        MyFirstAnalysis
     )
 
     def main(args: Array[String]) {

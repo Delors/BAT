@@ -47,9 +47,6 @@
 								<goal>testCompile</goal>
 							</goals>
 							<configuration>
-								<jvmArgs>
-									<jvmArg>-Xmx2048m</jvmArg>
-								</jvmArgs>
 								<args>
 									<arg>-unchecked</arg>
 									<arg>-deprecation</arg>
