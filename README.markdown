@@ -1,8 +1,12 @@
-# Moved the Repository
-I moved the repository; this one is kept for historical reasons. If you are interested in following BAT, just contact me.
+BAT has moved (and was renamed).
+
+# Go to [The OPAL Project](http://www.opal-project.de).
+
+**Moved the Repository**
+This repository is kept for historical reasons. 
 
 
-# Overview
+**Overview**
 BAT is library in Scala for analyzing Java Bytecode.
 
 BAT generally supports Java 6 class files and contains preliminary support for Java 7 as of June 2012.
